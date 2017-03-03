@@ -1,0 +1,9 @@
+Broadcast landing coordinates to neighbors
+
+Given: N pigs as input
+
+Use JSON
+
+Positions of pigs vs. their network neighbors is totally different
+
+Prior to EACH bird launch, assign positions to pigs

@@ -1,0 +1,18 @@
+Where is the bird launcher?
+
+How do we decide which one is the closest pig?
+
+How will a pig estimate the landing cell?
+
+If a pig knows only its own position, how will it know which nearby cells are empty
+ (so as to select one to move to)?
+
+How are multiple pigs affected by a launch?
+
+How do we start N instances of Pigs? (Learn more of RMI)
+
+Which machine will read the configuration file?
+
+Can we specify the list of neighbors for each pig in the configuration file?
+
+If the address of a pig is stored within the pig, then does a pig know the addresses of the neighbors as well?
