@@ -1,3 +1,5 @@
+Create JAR for deploying pigs
+
 Broadcast landing coordinates to neighbors
 
 Given: N pigs as input
