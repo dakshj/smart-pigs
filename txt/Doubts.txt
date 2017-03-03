@@ -16,3 +16,9 @@ Which machine will read the configuration file?
 Can we specify the list of neighbors for each pig in the configuration file?
 
 If the address of a pig is stored within the pig, then does a pig know the addresses of the neighbors as well?
+
+If there are 6 pigs, what should be the grid size and how many stones should be added
+
+In which direction will the pig fall? Randomly out of all (3/5/8) neighbor cells?
+
+Can a pig fall in a direction of its choice, or is it a random selection among all (3/5/8) neighboring cells?

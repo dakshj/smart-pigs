@@ -2,8 +2,33 @@ Broadcast landing coordinates to neighbors
 
 Given: N pigs as input
 
-Use JSON
-
 Positions of pigs vs. their network neighbors is totally different
 
-Prior to EACH bird launch, assign positions to pigs
+Prior to EACH bird launch, assign positions to pigs --> The game is only for a single launch
+Refresh otherwise
+
+JSON Inputs
+	N number of pigs
+	No. of stones
+	Grid size (nxm)
+	Address of each pig
+	Neighbors of each pig
+	hop delay
+	hop count
+
+A pig is attacked by a bird if:
+	If bird ETA < total time taken by all hops to reach a pig
+	If all (3/5/8) neighboring cells are blocked
+
+A pig is killed:
+	If attacked by a bird (see above)
+	If hurt by a neighboring pig
+	If hurt by a neighboring stone
+
+Direction of falling of a pig (?) and stone, should be random for all (3/5/8) neighboring cells
+
+------------------------------------------------------------------------------------------
+
+EXTRA:
+	If all (3/5/8) neighboring cells of a pig are blocked, then try to adjust all pigs on the map
+	so as to avoid a hit
