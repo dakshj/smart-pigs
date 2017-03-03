@@ -1,3 +1,5 @@
+Is there a delay to be added in all communications?
+
 Where is the bird launcher?
 
 How do we decide which one is the closest pig?
@@ -22,3 +24,17 @@ If there are 6 pigs, what should be the grid size and how many stones should be 
 In which direction will the pig fall? Randomly out of all (3/5/8) neighbor cells?
 
 Can a pig fall in a direction of its choice, or is it a random selection among all (3/5/8) neighboring cells?
+
+Does take_shelter(pigID) mean that the pig who is getting affected by a bird strike will call
+take_shelter with its own pigID?
+
+Since you know only the IDs of pigs within your networking neighbors, how will a pig call take_shelter(pigID)
+for saving its physical neighbors? Shouldn't it be take_shelter(row,col) for all row,cols around that pig?
+
+Why is was_hit() required if the status of a pig can simply be returned in status(pigID)?
+
+------------------------------------------------------------------------------------------
+
+Piazza Doubts:
+Can the network configuration be specified defensively, or should it be specified randomly?
+Should the network configuration be specified without knowledge of the physical location of the pigs?

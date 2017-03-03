@@ -25,10 +25,16 @@ A pig is killed:
 	If hurt by a neighboring pig
 	If hurt by a neighboring stone
 
+Since I am my neighbor's neighbor, I shouldn't be given my own message back during flood DFS messaging
+
+If a pig is killed by a neighboring stone, then it will propogate its impact (similar to a bird attack)
+
 Direction of falling of a pig (?) and stone, should be random for all (3/5/8) neighboring cells
+
+Wait for T ms before sending the next flood DFS message
 
 ------------------------------------------------------------------------------------------
 
 EXTRA:
-	If all (3/5/8) neighboring cells of a pig are blocked, then try to adjust all pigs on the map
-	so as to avoid a hit
+If all (3/5/8) neighboring cells of a pig are blocked, then try to adjust all pigs on the map
+so as to avoid a hit
