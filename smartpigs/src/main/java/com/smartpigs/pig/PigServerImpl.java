@@ -7,7 +7,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
-    static final String NAME = PigServerImpl.class.getName();
+    static final String NAME = "Pig Server";
 
     public PigServerImpl(final int portNo) throws RemoteException {
         try {
