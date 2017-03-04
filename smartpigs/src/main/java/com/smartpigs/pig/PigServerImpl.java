@@ -1,5 +1,6 @@
 package com.smartpigs.pig;
 
+import com.smartpigs.model.Cell;
 import com.smartpigs.model.Pig;
 
 import java.rmi.RemoteException;
@@ -13,7 +14,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     private Pig pig;
     private int hopCount;
-    private int hopDelay;
+    private long hopDelay;
 
     public PigServerImpl(final int portNo) throws RemoteException {
         try {
@@ -30,10 +31,14 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     @Override
     public void receiveData(final Pig pig, final int hopCount,
-            final int hopDelay) throws RemoteException {
+            final long hopDelay) throws RemoteException {
         setPig(pig);
         setHopCount(hopCount);
         setHopDelay(hopDelay);
+    }
+
+    @Override
+    public void birdLaunched(final long attackEta, final Cell attackedCell) throws RemoteException {
     }
 
     private void setPig(final Pig pig) {
@@ -44,7 +49,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
         this.hopCount = hopCount;
     }
 
-    private void setHopDelay(final int hopDelay) {
+    private void setHopDelay(final long hopDelay) {
         this.hopDelay = hopDelay;
     }
 }

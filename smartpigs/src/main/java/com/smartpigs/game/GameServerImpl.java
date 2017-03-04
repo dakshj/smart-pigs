@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.smartpigs.enums.OccupantType;
 import com.smartpigs.exception.ClosestPigNullException;
 import com.smartpigs.exception.OccupantsExceedCellsException;
+import com.smartpigs.game.client.BirdLauncher;
 import com.smartpigs.game.client.PigDataSender;
 import com.smartpigs.model.Address;
 import com.smartpigs.model.Cell;
@@ -52,6 +53,10 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         final Configuration configuration = readConfigurationFromFile(configFilePath);
 
         new PigDataSender(configuration).send();
+
+        new BirdLauncher(configuration.getClosestPig(),
+                configuration.getAttackEta(), configuration.getAttackedCell())
+                .launch();
 
         // TODO create grid using configuration
     }

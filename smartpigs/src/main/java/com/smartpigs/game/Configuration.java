@@ -1,5 +1,6 @@
 package com.smartpigs.game;
 
+import com.smartpigs.model.Cell;
 import com.smartpigs.model.Pig;
 
 import java.util.Set;
@@ -11,21 +12,23 @@ public class Configuration {
     private final int rows;
     private final int columns;
     private final int hopCount;
-    private final int hopDelay;
+    private final long hopDelay;
+    private final long attackEta;
+    private final Cell attackedCell;
     private final Set<Pig> pigSet;
 
     private transient Pig closestPig;
 
-    // TODO read adjacency list as well
-
     public Configuration(final int noOfPigs, final int noOfStones, final int rows, final int columns,
-            final int hopCount, final int hopDelay, final Set<Pig> pigSet) {
+            final int hopCount, final int hopDelay, final long attackEta, final Cell attackedCell, final Set<Pig> pigSet) {
         this.noOfPigs = noOfPigs;
         this.noOfStones = noOfStones;
         this.rows = rows;
         this.columns = columns;
         this.hopCount = hopCount;
         this.hopDelay = hopDelay;
+        this.attackEta = attackEta;
+        this.attackedCell = attackedCell;
         this.pigSet = pigSet;
     }
 
@@ -49,8 +52,16 @@ public class Configuration {
         return hopCount;
     }
 
-    public int getHopDelay() {
+    public long getHopDelay() {
         return hopDelay;
+    }
+
+    long getAttackEta() {
+        return attackEta;
+    }
+
+    Cell getAttackedCell() {
+        return attackedCell;
     }
 
     public Set<Pig> getPigSet() {

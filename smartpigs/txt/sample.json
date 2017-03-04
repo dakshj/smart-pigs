@@ -4,7 +4,12 @@
   "rows": 5,
   "columns": 5,
   "hopCount": 3,
-  "hopDelay": 2000,
+  "hopDelay": 500,
+  "attackEta": 3000,
+  "attackedCell": {
+    "row": 3,
+    "col": 4
+  },
   "closestPig": "2",
   "pigSet": [
     {
