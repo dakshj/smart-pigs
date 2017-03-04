@@ -2,16 +2,16 @@ package com.smartpigs.model;
 
 public class Address {
 
-    private final String ipAddress;
+    private final String host;
     private final int portNo;
 
-    public Address(final String ipAddress, final int portNo) {
-        this.ipAddress = ipAddress;
+    public Address(final String host, final int portNo) {
+        this.host = host;
         this.portNo = portNo;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public String getHost() {
+        return host;
     }
 
     public int getPortNo() {
@@ -20,6 +20,6 @@ public class Address {
 
     @Override
     public String toString() {
-        return getIpAddress() + ":" + getPortNo();
+        return getHost() + ":" + getPortNo();
     }
 }

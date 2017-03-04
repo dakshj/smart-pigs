@@ -45,15 +45,15 @@ public class Configuration {
         return columns;
     }
 
-    private int getHopCount() {
+    public int getHopCount() {
         return hopCount;
     }
 
-    private int getHopDelay() {
+    public int getHopDelay() {
         return hopDelay;
     }
 
-    Set<Pig> getPigSet() {
+    public Set<Pig> getPigSet() {
         return pigSet;
     }
 

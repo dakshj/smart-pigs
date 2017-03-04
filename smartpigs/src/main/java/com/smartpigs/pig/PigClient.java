@@ -15,12 +15,12 @@ public class PigClient {
     public PigClient(final Address address) throws RemoteException {
         this.address = address;
         final String urlServer = "rmi://"
-                + address.getIpAddress()
+                + address.getHost()
                 + ":" + address.getPortNo()
                 + "/" + PigServerImpl.NAME;
 
         final Registry registry = LocateRegistry
-                .getRegistry(address.getIpAddress(), address.getPortNo());
+                .getRegistry(address.getHost(), address.getPortNo());
 
         try {
             PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
