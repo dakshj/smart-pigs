@@ -11,7 +11,7 @@ public class Configuration {
     private final int noOfStones;
     private final int rows;
     private final int columns;
-    private final int hopCount;
+    private final int maxHopCount;
     private final long hopDelay;
     private final long attackEta;
     private final Cell attackedCell;
@@ -20,12 +20,12 @@ public class Configuration {
     private transient Pig closestPig;
 
     public Configuration(final int noOfPigs, final int noOfStones, final int rows, final int columns,
-            final int hopCount, final int hopDelay, final long attackEta, final Cell attackedCell, final Set<Pig> pigSet) {
+            final int maxHopCount, final int hopDelay, final long attackEta, final Cell attackedCell, final Set<Pig> pigSet) {
         this.noOfPigs = noOfPigs;
         this.noOfStones = noOfStones;
         this.rows = rows;
         this.columns = columns;
-        this.hopCount = hopCount;
+        this.maxHopCount = maxHopCount;
         this.hopDelay = hopDelay;
         this.attackEta = attackEta;
         this.attackedCell = attackedCell;
@@ -48,8 +48,8 @@ public class Configuration {
         return columns;
     }
 
-    public int getHopCount() {
-        return hopCount;
+    public int getMaxHopCount() {
+        return maxHopCount;
     }
 
     public long getHopDelay() {
@@ -91,7 +91,7 @@ public class Configuration {
                 ", noOfStones=" + noOfStones +
                 ", rows=" + rows +
                 ", columns=" + columns +
-                ", hopCount=" + hopCount +
+                ", maxHopCount=" + maxHopCount +
                 ", hopDelay=" + hopDelay +
                 ", pigSet=" + pigSet +
                 ", closestPig=" + closestPig +

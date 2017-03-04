@@ -18,7 +18,7 @@ public class Pig extends Occupant implements Serializable {
         return address;
     }
 
-    private Set<Address> getNeighborAddresses() {
+    public Set<Address> getNeighborAddresses() {
         return neighborAddresses;
     }
 

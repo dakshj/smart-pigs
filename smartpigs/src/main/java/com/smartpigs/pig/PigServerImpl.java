@@ -1,7 +1,10 @@
 package com.smartpigs.pig;
 
+import com.smartpigs.exception.PigNotInitializedException;
+import com.smartpigs.model.Address;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Pig;
+import com.smartpigs.pig.client.BirdAttackInformer;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,7 +16,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     public static final String NAME = "Pig Server";
 
     private Pig pig;
-    private int hopCount;
+    private int maxHopCount;
     private long hopDelay;
 
     public PigServerImpl(final int portNo) throws RemoteException {
@@ -30,23 +33,40 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     }
 
     @Override
-    public void receiveData(final Pig pig, final int hopCount,
+    public void receiveData(final Pig pig, final int maxHopCount,
             final long hopDelay) throws RemoteException {
         setPig(pig);
-        setHopCount(hopCount);
+        setMaxHopCount(maxHopCount);
         setHopDelay(hopDelay);
     }
 
     @Override
     public void birdLaunched(final long attackEta, final Cell attackedCell) throws RemoteException {
+        if (pig == null) {
+            throw new PigNotInitializedException();
+        }
+
+        new BirdAttackInformer(pig.getAddress(), pig.getNeighborAddresses(),
+                attackEta, attackedCell, maxHopCount, hopDelay).inform();
+    }
+
+    @Override
+    public void birdApproaching(final Address senderAddress, final long attackEta,
+            final Cell attackedCell, final int currentHopCount) throws RemoteException {
+        if (currentHopCount == 0) {
+            return;
+        }
+
+        new BirdAttackInformer(pig.getAddress(), pig.getNeighborAddresses(),
+                attackEta, attackedCell, currentHopCount, hopDelay).inform();
     }
 
     private void setPig(final Pig pig) {
         this.pig = pig;
     }
 
-    private void setHopCount(final int hopCount) {
-        this.hopCount = hopCount;
+    private void setMaxHopCount(final int maxHopCount) {
+        this.maxHopCount = maxHopCount;
     }
 
     private void setHopDelay(final long hopDelay) {
