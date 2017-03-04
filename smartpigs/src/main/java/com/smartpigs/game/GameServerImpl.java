@@ -18,7 +18,7 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
     private static final String NAME = "Game Server";
 
     /**
-     * Class constructor that starts the Game Server, reads the {@link Configuration} from a
+     * Creates a Game Server, reads the {@link Configuration} from a
      * configuration file, initializes grids and grid occupants, and provides runtime information
      * to each of the Pig nodes running on their respective {@link PigServer}s.
      *
