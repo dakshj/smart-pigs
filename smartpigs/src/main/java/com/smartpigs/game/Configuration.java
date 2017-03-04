@@ -14,6 +14,8 @@ public class Configuration {
     private final int hopDelay;
     private final Set<Pig> pigSet;
 
+    // TODO read adjacency list as well
+
     public Configuration(final int noOfPigs, final int noOfStones, final int rows, final int columns,
             final int hopCount, final int hopDelay, final Set<Pig> pigSet) {
         this.noOfPigs = noOfPigs;
@@ -25,19 +27,19 @@ public class Configuration {
         this.pigSet = pigSet;
     }
 
-    private int getNoOfPigs() {
+    int getNoOfPigs() {
         return noOfPigs;
     }
 
-    private int getNoOfStones() {
+    int getNoOfStones() {
         return noOfStones;
     }
 
-    private int getRows() {
+    int getRows() {
         return rows;
     }
 
-    private int getColumns() {
+    int getColumns() {
         return columns;
     }
 
@@ -49,7 +51,7 @@ public class Configuration {
         return hopDelay;
     }
 
-    private Set<Pig> getPigSet() {
+    Set<Pig> getPigSet() {
         return pigSet;
     }
 

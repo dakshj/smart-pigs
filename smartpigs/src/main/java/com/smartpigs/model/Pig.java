@@ -42,6 +42,6 @@ public class Pig extends Occupant {
                 "id='" + id + '\'' +
                 ", address=" + address +
                 ", logicalNeighbors=" + logicalNeighbors +
-                '}';
+                "} " + super.toString();
     }
 }

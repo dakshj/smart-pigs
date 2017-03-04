@@ -19,4 +19,12 @@ class Occupant {
     private OccupantType getOccupantType() {
         return occupantType;
     }
+
+    @Override
+    public String toString() {
+        return "Occupant{" +
+                "occupiedCell=" + occupiedCell +
+                ", occupantType=" + occupantType +
+                '}';
+    }
 }

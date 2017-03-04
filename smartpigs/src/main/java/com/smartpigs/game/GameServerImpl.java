@@ -1,6 +1,7 @@
 package com.smartpigs.game;
 
 import com.google.gson.Gson;
+import com.smartpigs.exception.OccupantsExceedCellsException;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +36,34 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
     private Configuration readConfigurationFromFile(final String configFilePath) {
         final Gson gson = new Gson();
-        return gson.fromJson(readFile(configFilePath), Configuration.class);
+
+        final Configuration configuration =
+                gson.fromJson(readFile(configFilePath), Configuration.class);
+
+        validateConfiguration(configuration);
+
+        return configuration;
+    }
+
+    /**
+     * @param configuration The configuration to validate
+     */
+    private void validateConfiguration(final Configuration configuration) {
+        checkOccupantCapacityInGrid(configuration);
+    }
+
+    /**
+     * Checks whether the occupants (pigs + stones) are able to fit in the grid.
+     *
+     * @param configuration The configuration to check the grid capacity against
+     */
+    private void checkOccupantCapacityInGrid(final Configuration configuration) {
+        final int occupantCount = configuration.getNoOfPigs() + configuration.getNoOfStones();
+        final int cellCount = configuration.getRows() * configuration.getColumns();
+
+        if (occupantCount > cellCount) {
+            throw new OccupantsExceedCellsException(occupantCount, cellCount);
+        }
     }
 
     private String readFile(final String configFilePath) {
