@@ -1,7 +1,11 @@
 package com.smartpigs.game;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.smartpigs.exception.OccupantsExceedCellsException;
+import com.smartpigs.model.Pig;
 import com.smartpigs.pig.PigServer;
 
 import java.io.File;
@@ -64,8 +68,11 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
     private Configuration readConfigurationFromFile(final String configFilePath) {
         final Gson gson = new Gson();
 
-        final Configuration configuration =
-                gson.fromJson(readFile(configFilePath), Configuration.class);
+        JsonObject jsonObject = new JsonParser().parse(readFile(configFilePath)).getAsJsonObject();
+
+        final Configuration configuration = gson.fromJson(jsonObject, Configuration.class);
+
+        mapPigIdsToObjects(configuration, jsonObject);
 
         validateConfiguration(configuration);
 
@@ -73,10 +80,33 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
     }
 
     /**
+     * Maps each Pig to its neighbors by resolving their IDs to {@link Pig} object references.
+     *
+     * @param configuration The configuration to fetch pigs from
+     * @param jsonObject    The configuration JSON Object to read neighbor IDs from
+     */
+    private void mapPigIdsToObjects(final Configuration configuration, final JsonObject jsonObject) {
+        final JsonArray network = jsonObject.getAsJsonArray("network");
+
+        network.forEach(element -> {
+            final JsonObject object = element.getAsJsonObject();
+            final Pig pig = configuration.getPigFromId(object.get("pig").getAsString());
+
+            final JsonArray logicalNeighbors = object.get("logicalNeighbors").getAsJsonArray();
+
+            logicalNeighbors.forEach(neighborId -> {
+                final Pig neighbor = configuration.getPigFromId(neighborId.getAsString());
+                pig.addLogicalNeighbor(neighbor);
+            });
+        });
+    }
+
+    /**
      * @param configuration The configuration to validate
      */
     private void validateConfiguration(final Configuration configuration) {
         checkOccupantCapacityInGrid(configuration);
+        // TODO add more Configuration validations
     }
 
     /**

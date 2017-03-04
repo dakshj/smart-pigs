@@ -51,8 +51,16 @@ public class Configuration {
         return hopDelay;
     }
 
-    Set<Pig> getPigSet() {
+    private Set<Pig> getPigSet() {
         return pigSet;
+    }
+
+    Pig getPigFromId(final String pigId) {
+        //noinspection OptionalGetWithoutIsPresent
+        return getPigSet().stream()
+                .filter(pig -> pig.getId().equals(pigId))
+                .findFirst()
+                .get();
     }
 
     @Override

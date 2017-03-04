@@ -31,9 +31,8 @@ public class Pig extends Occupant {
         return logicalNeighbors;
     }
 
-    public Set<Pig> addLogicalNeighbor(final Pig pig) {
-        logicalNeighbors.add(pig);
-        return logicalNeighbors;
+    public void addLogicalNeighbor(final Pig neighbor) {
+        logicalNeighbors.add(neighbor);
     }
 
     @Override
