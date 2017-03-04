@@ -2,7 +2,14 @@ package com.smartpigs.enums;
 
 public enum ExecutionMode {
 
+    /**
+     * Indicates that a Game Server needs to be started.
+     */
     GAME_SERVER,
+
+    /**
+     * Indicates that a Pig Server needs to be started.
+     */
     PIG_SERVER;
 
     public static ExecutionMode from(final int mode) {
