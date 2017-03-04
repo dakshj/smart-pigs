@@ -3,7 +3,9 @@ package com.smartpigs.enums;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Pig;
 
-public enum OccupantType {
+import java.io.Serializable;
+
+public enum OccupantType implements Serializable {
 
     /**
      * Indicates that the {@link Cell} is empty.

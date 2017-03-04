@@ -13,4 +13,11 @@ public class Grid {
     private List<List<Occupant>> getOccupants() {
         return occupants;
     }
+
+    @Override
+    public String toString() {
+        return "Grid{" +
+                "occupants=" + occupants +
+                '}';
+    }
 }

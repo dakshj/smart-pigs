@@ -1,23 +1,14 @@
 package com.smartpigs.model;
 
-import com.smartpigs.enums.OccupantType;
-
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Pig extends Occupant {
+public class Pig extends Occupant implements Serializable {
 
-    private final String id;
-    private final Address address;
-    private final Set<Pig> logicalNeighbors;
-
-    public Pig(final Cell occupiedCell, final OccupantType occupantType,
-            final String id, final Address address) {
-        super(occupiedCell, occupantType);
-        this.id = id;
-        this.address = address;
-        this.logicalNeighbors = new HashSet<>();
-    }
+    private String id;
+    private Address address;
+    private Set<Address> neighborAddresses;
 
     public String getId() {
         return id;
@@ -27,12 +18,31 @@ public class Pig extends Occupant {
         return address;
     }
 
-    public Set<Pig> getLogicalNeighbors() {
-        return logicalNeighbors;
+    private Set<Address> getNeighborAddresses() {
+        return neighborAddresses;
     }
 
-    public void addLogicalNeighbor(final Pig neighbor) {
-        logicalNeighbors.add(neighbor);
+    public void addNeighborAddress(final Address neighborAddress) {
+        if (neighborAddresses == null) {
+            neighborAddresses = new HashSet<>();
+        }
+
+        neighborAddresses.add(neighborAddress);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Pig pig = (Pig) o;
+
+        return id.equals(pig.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 
     @Override
@@ -40,7 +50,7 @@ public class Pig extends Occupant {
         return "Pig{" +
                 "id='" + id + '\'' +
                 ", address=" + address +
-                ", logicalNeighbors=" + logicalNeighbors +
+                ", neighborAddresses=" + neighborAddresses +
                 "} " + super.toString();
     }
 }

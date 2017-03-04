@@ -1,8 +1,8 @@
 {
   "noOfPigs": 6,
   "noOfStones": 10,
-  "rows": 4,
-  "columns": 4,
+  "rows": 5,
+  "columns": 5,
   "hopCount": 3,
   "hopDelay": 2000,
   "closestPig": "2",
@@ -10,42 +10,42 @@
     {
       "id": "1",
       "address": {
-        "ipAddress": "localhost",
+        "host": "localhost",
         "portNo": 1099
       }
     },
     {
       "id": "2",
       "address": {
-        "ipAddress": "localhost",
+        "host": "localhost",
         "portNo": 1100
       }
     },
     {
       "id": "3",
       "address": {
-        "ipAddress": "localhost",
+        "host": "localhost",
         "portNo": 1101
       }
     },
     {
       "id": "4",
       "address": {
-        "ipAddress": "localhost",
+        "host": "localhost",
         "portNo": 1102
       }
     },
     {
       "id": "5",
       "address": {
-        "ipAddress": "localhost",
+        "host": "localhost",
         "portNo": 1103
       }
     },
     {
       "id": "6",
       "address": {
-        "ipAddress": "localhost",
+        "host": "localhost",
         "portNo": 1104
       }
     }
@@ -53,7 +53,7 @@
   "network": [
     {
       "pig": "1",
-      "logicalNeighbors": [
+      "neighbors": [
         "2",
         "4",
         "5"
@@ -61,28 +61,28 @@
     },
     {
       "pig": "2",
-      "logicalNeighbors": [
+      "neighbors": [
         "1",
         "5"
       ]
     },
     {
       "pig": "3",
-      "logicalNeighbors": [
+      "neighbors": [
         "4",
         "6"
       ]
     },
     {
       "pig": "4",
-      "logicalNeighbors": [
+      "neighbors": [
         "1",
         "3"
       ]
     },
     {
       "pig": "5",
-      "logicalNeighbors": [
+      "neighbors": [
         "1",
         "2",
         "6"
@@ -90,7 +90,7 @@
     },
     {
       "pig": "6",
-      "logicalNeighbors": [
+      "neighbors": [
         "3",
         "5"
       ]

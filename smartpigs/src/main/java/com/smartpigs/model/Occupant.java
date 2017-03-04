@@ -2,22 +2,27 @@ package com.smartpigs.model;
 
 import com.smartpigs.enums.OccupantType;
 
-class Occupant {
+import java.io.Serializable;
 
-    private final Cell occupiedCell;
-    private final OccupantType occupantType;
+public class Occupant implements Serializable {
 
-    Occupant(final Cell occupiedCell, final OccupantType occupantType) {
-        this.occupiedCell = occupiedCell;
-        this.occupantType = occupantType;
-    }
+    private Cell occupiedCell;
+    private OccupantType occupantType;
 
     private Cell getOccupiedCell() {
         return occupiedCell;
     }
 
+    public void setOccupiedCell(final Cell occupiedCell) {
+        this.occupiedCell = occupiedCell;
+    }
+
     private OccupantType getOccupantType() {
         return occupantType;
+    }
+
+    public void setOccupantType(final OccupantType occupantType) {
+        this.occupantType = occupantType;
     }
 
     @Override

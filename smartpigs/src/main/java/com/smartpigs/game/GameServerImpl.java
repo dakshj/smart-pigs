@@ -4,9 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.smartpigs.enums.OccupantType;
 import com.smartpigs.exception.ClosestPigNullException;
 import com.smartpigs.exception.OccupantsExceedCellsException;
 import com.smartpigs.game.client.PigDataSender;
+import com.smartpigs.model.Address;
+import com.smartpigs.model.Cell;
+import com.smartpigs.model.Grid;
+import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
 import com.smartpigs.pig.PigServer;
 
@@ -18,6 +23,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
@@ -74,15 +84,125 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
         final Configuration configuration = gson.fromJson(jsonObject, Configuration.class);
 
-        mapPigIdsToObjects(configuration, jsonObject);
+        mapPigIdsToNeighborAddresses(configuration, jsonObject);
 
         initializeClosestPig(configuration, jsonObject);
+
+        final Grid grid = createGrid(configuration);
 
         validateConfiguration(configuration);
 
         return configuration;
     }
 
+    /**
+     * Creates a random grid of pigs, Stones, and Empty cells
+     * with the number of Pigs and Stones specified in the given configuration.
+     * <p>
+     * The rest of the cells are marked as empty.
+     *
+     * @param configuration The configuration to use while creating a random grid
+     * @return The grid created using the given configuration
+     */
+    private Grid createGrid(final Configuration configuration) {
+        final Occupant[][] occupants = new Occupant[configuration.getRows()][configuration.getColumns()];
+
+        addOccupantsToGrid(configuration.getPigSet(), OccupantType.PIG, occupants,
+                configuration.getRows(), configuration.getColumns());
+
+        final Set<Occupant> stoneSet = IntStream.range(0, configuration.getNoOfStones())
+                .boxed()
+                .map(i -> new Occupant())
+                .collect(Collectors.toSet());
+
+        addOccupantsToGrid(stoneSet, OccupantType.STONE, occupants,
+                configuration.getRows(), configuration.getColumns());
+
+        setRemainingCellsAsEmpty(occupants);
+
+        return new Grid(
+                Arrays.stream(occupants)
+                        .map(Arrays::asList)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Randomly adds occupants (Pigs and Stones) to the {@code occupants} grid.
+     *
+     * @param occupantSet  The {@link Set} of occupants to add
+     * @param occupantType The type of occupant (Pig or Stone)
+     * @param occupants    The grid of occupants
+     * @param rows         The number of rows of the {@code occupants} grid
+     * @param cols         The number of columns of the {@code occupants} grid
+     */
+    private void addOccupantsToGrid(final Set<? extends Occupant> occupantSet,
+            final OccupantType occupantType, final Occupant[][] occupants,
+            final int rows, final int cols) {
+        for (final Occupant occupant : occupantSet) {
+            int row = ThreadLocalRandom.current().nextInt(0, rows);
+            int col = ThreadLocalRandom.current().nextInt(0, cols);
+
+            // Validation to check if a to-be-assigned Cell is already occupied
+            while (occupants[row][col] != null) {
+                row = ThreadLocalRandom.current().nextInt(0, rows);
+                col = ThreadLocalRandom.current().nextInt(0, cols);
+            }
+
+            occupant.setOccupiedCell(new Cell(row, col));
+            occupant.setOccupantType(occupantType);
+
+            occupants[row][col] = occupant;
+        }
+    }
+
+    /**
+     * Sets cells which have not been occupied by Pigs and Stones as {@code Empty}.
+     *
+     * @param occupants The grid of occupants in which to add empty cells
+     */
+    private void setRemainingCellsAsEmpty(final Occupant[][] occupants) {
+        for (int row = 0; row < occupants.length; row++) {
+            for (int col = 0; col < occupants[row].length; col++) {
+                if (occupants[row][col] == null) {
+                    final Occupant occupant = new Occupant();
+                    occupant.setOccupantType(OccupantType.EMPTY);
+                    occupants[row][col] = occupant;
+                }
+            }
+        }
+    }
+
+    /**
+     * Maps each Pig to its neighbors' addresses by resolving their IDs to
+     * {@link Address} references.
+     *
+     * @param configuration The configuration to fetch pigs from
+     * @param jsonObject    The configuration JSON Object to read neighbor IDs from
+     */
+    private void mapPigIdsToNeighborAddresses(final Configuration configuration,
+            final JsonObject jsonObject) {
+        final JsonArray network = jsonObject.getAsJsonArray("network");
+
+        network.forEach(element -> {
+            final JsonObject object = element.getAsJsonObject();
+            final Pig pig = configuration.getPigFromId(object.get("pig").getAsString());
+
+            final JsonArray neighbors = object.get("neighbors").getAsJsonArray();
+
+            neighbors.forEach(neighborId -> {
+                final Pig neighbor = configuration.getPigFromId(neighborId.getAsString());
+                pig.addNeighborAddress(neighbor.getAddress());
+            });
+        });
+    }
+
+    /**
+     * Sets a pig as the closest pig in the configuration.
+     *
+     * @param configuration The configuration within which to set the closest pig
+     * @param jsonObject    The JSON data from which to read the closest pig's ID
+     */
     private void initializeClosestPig(final Configuration configuration,
             final JsonObject jsonObject) {
         //noinspection OptionalGetWithoutIsPresent
@@ -93,28 +213,6 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
                         .findFirst()
                         .get()
         );
-    }
-
-    /**
-     * Maps each Pig to its neighbors by resolving their IDs to {@link Pig} object references.
-     *
-     * @param configuration The configuration to fetch pigs from
-     * @param jsonObject    The configuration JSON Object to read neighbor IDs from
-     */
-    private void mapPigIdsToObjects(final Configuration configuration, final JsonObject jsonObject) {
-        final JsonArray network = jsonObject.getAsJsonArray("network");
-
-        network.forEach(element -> {
-            final JsonObject object = element.getAsJsonObject();
-            final Pig pig = configuration.getPigFromId(object.get("pig").getAsString());
-
-            final JsonArray logicalNeighbors = object.get("logicalNeighbors").getAsJsonArray();
-
-            logicalNeighbors.forEach(neighborId -> {
-                final Pig neighbor = configuration.getPigFromId(neighborId.getAsString());
-                pig.addLogicalNeighbor(neighbor);
-            });
-        });
     }
 
     /**

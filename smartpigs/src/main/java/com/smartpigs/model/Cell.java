@@ -1,6 +1,8 @@
 package com.smartpigs.model;
 
-public class Cell {
+import java.io.Serializable;
+
+public class Cell implements Serializable {
 
     private final int row;
     private final int col;
@@ -16,5 +18,10 @@ public class Cell {
 
     private int getCol() {
         return col;
+    }
+
+    @Override
+    public String toString() {
+        return row + "," + col;
     }
 }

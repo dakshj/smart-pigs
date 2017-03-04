@@ -14,7 +14,7 @@ public class Configuration {
     private final int hopDelay;
     private final Set<Pig> pigSet;
 
-    private Pig closestPig;
+    private transient Pig closestPig;
 
     // TODO read adjacency list as well
 
@@ -83,6 +83,7 @@ public class Configuration {
                 ", hopCount=" + hopCount +
                 ", hopDelay=" + hopDelay +
                 ", pigSet=" + pigSet +
+                ", closestPig=" + closestPig +
                 '}';
     }
 }

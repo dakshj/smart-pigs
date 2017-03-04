@@ -1,6 +1,8 @@
 package com.smartpigs.model;
 
-public class Address {
+import java.io.Serializable;
+
+public class Address implements Serializable {
 
     private final String host;
     private final int portNo;

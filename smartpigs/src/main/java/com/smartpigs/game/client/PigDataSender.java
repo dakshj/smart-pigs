@@ -15,7 +15,7 @@ import java.rmi.registry.Registry;
  * <p>
  * The sent data includes:
  * <li>Pig ID
- * <li>Set of Logical Neighbors
+ * <li>Set of Neighbor Addresses
  * <li>Network's Hop Count
  * <li>Network's Hop Delay
  */
