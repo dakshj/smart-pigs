@@ -2,25 +2,37 @@ package com.smartpigs.model;
 
 import com.smartpigs.enums.OccupantType;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Pig extends Occupant {
 
+    private final String id;
     private final Address address;
-    private final List<Pig> neighbors;
+    private final Set<Pig> logicalNeighbors;
 
     public Pig(final Cell occupiedCell, final OccupantType occupantType,
-            final Address address, final List<Pig> neighbors) {
+            final String id, final Address address) {
         super(occupiedCell, occupantType);
+        this.id = id;
         this.address = address;
-        this.neighbors = neighbors;
+        this.logicalNeighbors = new HashSet<>();
     }
 
-    private Address getAddress() {
+    public String getId() {
+        return id;
+    }
+
+    public Address getAddress() {
         return address;
     }
 
-    private List<Pig> getNeighbors() {
-        return neighbors;
+    public Set<Pig> getLogicalNeighbors() {
+        return logicalNeighbors;
+    }
+
+    public Set<Pig> addLogicalNeighbor(final Pig pig) {
+        logicalNeighbors.add(pig);
+        return logicalNeighbors;
     }
 }

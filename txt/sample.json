@@ -5,36 +5,48 @@
   "columns": 4,
   "hopCount": 3,
   "hopDelay": 2000,
-  "pigs": [
+  "pigSet": [
     {
       "id": 1,
-      "ipAddress": "localhost",
-      "portNo": 1099
+      "address": {
+        "ipAddress": "localhost",
+        "portNo": 1099
+      }
     },
     {
       "id": 2,
-      "ipAddress": "localhost",
-      "portNo": 1100
+      "address": {
+        "ipAddress": "localhost",
+        "portNo": 1100
+      }
     },
     {
       "id": 3,
-      "ipAddress": "localhost",
-      "portNo": 1101
+      "address": {
+        "ipAddress": "localhost",
+        "portNo": 1101
+      }
     },
     {
       "id": 4,
-      "ipAddress": "localhost",
-      "portNo": 1102
+      "address": {
+        "ipAddress": "localhost",
+        "portNo": 1102
+      }
     },
     {
       "id": 5,
-      "ipAddress": "localhost",
-      "portNo": 1103
+      "address": {
+        "ipAddress": "localhost",
+        "portNo": 1103
+      }
     },
     {
       "id": 6,
-      "ipAddress": "localhost",
-      "portNo": 1104
+      "address": {
+        "ipAddress": "localhost",
+        "portNo": 1104
+      }
     }
   ]
 }
