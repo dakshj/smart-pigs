@@ -1,0 +1,40 @@
+{
+  "noOfPigs": 6,
+  "noOfStones": 10,
+  "rows": 4,
+  "columns": 4,
+  "hopCount": 3,
+  "hopDelay": 2000,
+  "pigs": [
+    {
+      "id": 1,
+      "ipAddress": "localhost",
+      "portNo": 1099
+    },
+    {
+      "id": 2,
+      "ipAddress": "localhost",
+      "portNo": 1100
+    },
+    {
+      "id": 3,
+      "ipAddress": "localhost",
+      "portNo": 1101
+    },
+    {
+      "id": 4,
+      "ipAddress": "localhost",
+      "portNo": 1102
+    },
+    {
+      "id": 5,
+      "ipAddress": "localhost",
+      "portNo": 1103
+    },
+    {
+      "id": 6,
+      "ipAddress": "localhost",
+      "portNo": 1104
+    }
+  ]
+}

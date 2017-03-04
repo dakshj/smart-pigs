@@ -3,18 +3,23 @@ package com.smartpigs.model;
 public class Address {
 
     private final String ipAddress;
-    private final String portNo;
+    private final int portNo;
 
-    public Address(final String ipAddress, final String portNo) {
+    public Address(final String ipAddress, final int portNo) {
         this.ipAddress = ipAddress;
         this.portNo = portNo;
     }
 
-    private String getIpAddress() {
+    public String getIpAddress() {
         return ipAddress;
     }
 
-    private String getPortNo() {
+    public int getPortNo() {
         return portNo;
+    }
+
+    @Override
+    public String toString() {
+        return getIpAddress() + ":" + getPortNo();
     }
 }
