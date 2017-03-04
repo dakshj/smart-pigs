@@ -1,5 +1,10 @@
 package com.smartpigs.game;
 
+import com.google.gson.Gson;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -29,7 +34,19 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
     }
 
     private Configuration readConfigurationFromFile(final String configFilePath) {
-        // TODO parse json stored at configFilePath
-        return null;
+        final Gson gson = new Gson();
+        return gson.fromJson(readFile(configFilePath), Configuration.class);
+    }
+
+    private String readFile(final String configFilePath) {
+        final StringBuilder builder = new StringBuilder();
+        try {
+            Files.lines(new File(configFilePath).toPath())
+                    .forEach(builder::append);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return builder.toString();
     }
 }

@@ -35,4 +35,13 @@ public class Pig extends Occupant {
         logicalNeighbors.add(pig);
         return logicalNeighbors;
     }
+
+    @Override
+    public String toString() {
+        return "Pig{" +
+                "id='" + id + '\'' +
+                ", address=" + address +
+                ", logicalNeighbors=" + logicalNeighbors +
+                '}';
+    }
 }

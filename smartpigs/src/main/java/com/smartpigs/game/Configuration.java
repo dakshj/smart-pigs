@@ -52,4 +52,17 @@ public class Configuration {
     private Set<Pig> getPigSet() {
         return pigSet;
     }
+
+    @Override
+    public String toString() {
+        return "Configuration{" +
+                "noOfPigs=" + noOfPigs +
+                ", noOfStones=" + noOfStones +
+                ", rows=" + rows +
+                ", columns=" + columns +
+                ", hopCount=" + hopCount +
+                ", hopDelay=" + hopDelay +
+                ", pigSet=" + pigSet +
+                '}';
+    }
 }
