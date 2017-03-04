@@ -5,6 +5,7 @@
   "columns": 4,
   "hopCount": 3,
   "hopDelay": 2000,
+  "closestPig": "2",
   "pigSet": [
     {
       "id": "1",

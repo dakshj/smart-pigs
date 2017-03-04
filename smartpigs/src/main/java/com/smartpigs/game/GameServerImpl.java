@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.smartpigs.exception.ClosestPigNullException;
 import com.smartpigs.exception.OccupantsExceedCellsException;
+import com.smartpigs.game.client.PigDataSender;
 import com.smartpigs.model.Pig;
 import com.smartpigs.pig.PigServer;
 
@@ -39,9 +41,9 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
         final Configuration configuration = readConfigurationFromFile(configFilePath);
 
-        // TODO initialize Pigs using configuration
+        new PigDataSender(configuration).send();
+
         // TODO create grid using configuration
-        // TODO assign neighbors to Pigs
     }
 
     /**
@@ -74,9 +76,23 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
         mapPigIdsToObjects(configuration, jsonObject);
 
+        initializeClosestPig(configuration, jsonObject);
+
         validateConfiguration(configuration);
 
         return configuration;
+    }
+
+    private void initializeClosestPig(final Configuration configuration,
+            final JsonObject jsonObject) {
+        //noinspection OptionalGetWithoutIsPresent
+        configuration.setClosestPig(
+                configuration.getPigSet().stream()
+                        .filter(pig ->
+                                pig.getId().equals(jsonObject.get("closestPig").getAsString()))
+                        .findFirst()
+                        .get()
+        );
     }
 
     /**
@@ -106,6 +122,11 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
      */
     private void validateConfiguration(final Configuration configuration) {
         checkOccupantCapacityInGrid(configuration);
+
+        if (configuration.getClosestPig() == null) {
+            throw new ClosestPigNullException();
+        }
+
         // TODO add more Configuration validations
     }
 

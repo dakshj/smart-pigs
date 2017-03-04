@@ -14,6 +14,8 @@ public class Configuration {
     private final int hopDelay;
     private final Set<Pig> pigSet;
 
+    private Pig closestPig;
+
     // TODO read adjacency list as well
 
     public Configuration(final int noOfPigs, final int noOfStones, final int rows, final int columns,
@@ -51,7 +53,7 @@ public class Configuration {
         return hopDelay;
     }
 
-    private Set<Pig> getPigSet() {
+    Set<Pig> getPigSet() {
         return pigSet;
     }
 
@@ -61,6 +63,14 @@ public class Configuration {
                 .filter(pig -> pig.getId().equals(pigId))
                 .findFirst()
                 .get();
+    }
+
+    Pig getClosestPig() {
+        return closestPig;
+    }
+
+    void setClosestPig(final Pig closestPig) {
+        this.closestPig = closestPig;
     }
 
     @Override
