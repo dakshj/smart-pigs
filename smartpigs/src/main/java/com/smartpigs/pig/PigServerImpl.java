@@ -8,7 +8,6 @@ import com.smartpigs.model.Pig;
 import com.smartpigs.pig.client.BirdAttackInformer;
 import com.smartpigs.pig.client.PigKiller;
 import com.smartpigs.pig.client.ShelterInformer;
-import com.smartpigs.pig.client.ShelterInformer.NeighborCellUpdateListener;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -126,8 +125,16 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
         setAliveStatus(false);
     }
 
+    /**
+     * Makes a pig take shelter away from the sender, who is a pig that is dead or about to die,
+     * and thus cause collateral death to this pig.
+     * <p>
+     * To take shelter, a pig needs to move at least two steps away from the sender.
+     *
+     * @param sender The pig that initiated {@link ShelterInformer}, and who is dead or about to die
+     */
     @Override
-    public void takeShelter(final Pig sender, final NeighborCellUpdateListener listener) {
+    public void takeShelter(final Pig sender) {
         getNeighbors().stream()
                 .flatMap(Collection::stream)
                 .filter(occupant -> occupant.getOccupantType() == OccupantType.EMPTY)

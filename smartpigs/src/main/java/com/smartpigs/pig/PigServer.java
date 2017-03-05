@@ -3,7 +3,6 @@ package com.smartpigs.pig;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
-import com.smartpigs.pig.client.ShelterInformer;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -19,5 +18,5 @@ public interface PigServer extends Remote {
 
     void killByFallingOver() throws RemoteException;
 
-    void takeShelter(Pig sender, ShelterInformer.NeighborCellUpdateListener listener);
+    void takeShelter(Pig sender);
 }

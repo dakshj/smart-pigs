@@ -36,7 +36,7 @@ public class ShelterInformer {
                     pig.getAddress().getPortNo());
             PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
 
-            pigServer.takeShelter(sender, listener);
+            pigServer.takeShelter(sender);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
