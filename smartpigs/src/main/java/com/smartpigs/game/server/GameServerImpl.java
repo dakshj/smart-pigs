@@ -68,9 +68,11 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         // Else call birdLaunched() on the closest pig
         getConfiguration().getGrid().getOccupants().stream()
                 .flatMap(Collection::stream)
+                .filter(occupant ->
+                        occupant.getOccupiedCell().equals(getConfiguration().getAttackedCell()))
                 .findFirst()
                 .ifPresent(occupant -> {
-                    if (occupant.getOccupiedCell().equals(getConfiguration().getAttackedCell())) {
+                    if (occupant.getOccupantType() == OccupantType.STONE) {
                         new Timer().schedule(new TimerTask() {
                             @Override
                             public void run() {
