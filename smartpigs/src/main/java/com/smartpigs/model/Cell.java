@@ -12,11 +12,11 @@ public class Cell implements Serializable {
         this.col = col;
     }
 
-    private int getRow() {
+    public int getRow() {
         return row;
     }
 
-    private int getCol() {
+    public int getCol() {
         return col;
     }
 

@@ -128,9 +128,15 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     @Override
     public void takeShelter(final Pig sender, final NeighborCellUpdateListener listener) {
-        // TODO move at least two cells away in either dimension from sender
-        // TODO use neighbors to check which of these would be a valid empty cell
-        // TODO update cell in getPig() and send getPig() via listener
+        getNeighbors().stream()
+                .flatMap(Collection::stream)
+                .filter(occupant -> occupant.getOccupantType() == OccupantType.EMPTY)
+                .filter(occupant -> Math.max(
+                        Math.abs(sender.getOccupiedCell().getRow() - occupant.getOccupiedCell().getRow()),
+                        Math.abs(sender.getOccupiedCell().getCol() - occupant.getOccupiedCell().getCol())
+                ) >= 2)
+                .findFirst()
+                .ifPresent(occupant -> getPig().setOccupiedCell(occupant.getOccupiedCell()));
     }
 
     private void killSelfAndAnotherOccupant() {
