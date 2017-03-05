@@ -1,12 +1,11 @@
 package com.smartpigs.pig.server;
 
 import com.smartpigs.enums.OccupantType;
-import com.smartpigs.exception.PigNotInitializedException;
-import com.smartpigs.pig.client.NeighborCellUpdater;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
 import com.smartpigs.pig.client.BirdAttackInformer;
+import com.smartpigs.pig.client.NeighborCellUpdater;
 import com.smartpigs.pig.client.PigKiller;
 import com.smartpigs.pig.client.ShelterInformer;
 
@@ -65,10 +64,6 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     @Override
     public void birdApproaching(final List<Pig> path, final long attackEta,
             final Cell attackedCell, final int currentHopCount) throws RemoteException {
-        if (getPig() == null) {
-            throw new PigNotInitializedException();
-        }
-
         if (getPig().getOccupiedCell().equals(attackedCell)) {
             new ShelterInformer(getPig(), getNeighbors()).inform();
 

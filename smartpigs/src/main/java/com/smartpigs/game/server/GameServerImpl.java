@@ -79,6 +79,10 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
      * Reads the configuration file and converts it into a {@link Configuration} object.
      * <p>
      * Uses {@link Gson} for mapping the JSON contents to the object variables.
+     * <p>
+     * Creates the grid with random pigs, stones and empty cells.
+     * <p>
+     * Additionally builds the peer and neighbor maps by using the provided configuration.
      *
      * @param configFilePath The file path to read the configuration from
      * @return The {@link Configuration} object read from the configuration file
@@ -103,6 +107,15 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         return configuration;
     }
 
+    /**
+     * Maps each pig to its physical neighbors (i.e., grid occupants which are
+     * one step away in all directions, including diagonals).
+     * <p>
+     * Stores the built neighbor map into {@link Configuration#neighborMap}.
+     *
+     * @param grid          The grid using which to build the neighbor map
+     * @param configuration The configuration to put the neighbor map into
+     */
     private void buildNeighborMap(final Grid grid, final Configuration configuration) {
         for (int row = 0; row < grid.getOccupants().size(); row++) {
             for (int col = 0; col < grid.getOccupants().size(); col++) {
@@ -129,12 +142,27 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         }
     }
 
+    /**
+     * Adds neighbors of a pig into a smaller 3x3 matrix, with the pig at the center.
+     * <p>
+     * If a cell is out of grid bounds, then it is stored as {@code null} within the smaller matrix.
+     *
+     * @param neighbors     The 3x3 matrix within which to add neighbors (pigs, stones, or empty cells)
+     * @param configuration The configuration to read the grid dimensions from
+     * @param grid          The grid to get occupants from so as to add them to {@code neighbors}
+     * @param rowGrid       The row index within the original grid
+     * @param colGrid       The column index within the original grid
+     * @param row           The row index within the smaller 3x3 matrix, at which to store a neighbor
+     * @param col           The column index within the smaller 3x3 matrix, at which to store a neighbor
+     */
     private void setNeighbor(final Occupant[][] neighbors, final Configuration configuration,
             final Grid grid, final int rowGrid, final int colGrid, final int row, final int col) {
+        // Validate that the given rowGrid and colGrid are within the grid bounds
         if (rowGrid >= 0 && rowGrid < configuration.getRows() &&
                 colGrid >= 0 && colGrid < configuration.getColumns()) {
             neighbors[row][col] = grid.getOccupants().get(rowGrid).get(colGrid);
         } else {
+            // If outside bounds, then set that neighbor as null
             neighbors[row][col] = null;
         }
     }
@@ -154,6 +182,7 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         addOccupantsToGrid(configuration.getPigSet(), OccupantType.PIG, occupants,
                 configuration.getRows(), configuration.getColumns());
 
+        // Build a Set of Stone Occupants so as to re-use addOccupantsToGrid() for also adding stones
         final Set<Occupant> stoneSet = IntStream.range(0, configuration.getNoOfStones())
                 .boxed()
                 .map(i -> new Occupant())

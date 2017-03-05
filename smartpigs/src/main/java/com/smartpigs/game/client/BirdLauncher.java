@@ -7,6 +7,7 @@ import com.smartpigs.pig.server.PigServer;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BirdLauncher {
 
@@ -23,6 +24,11 @@ public class BirdLauncher {
         this.maxHopCount = maxHopCount;
     }
 
+    /**
+     * Launches a bird to the closest pig.
+     * <p>
+     * Utilizes {@link PigServer#birdApproaching(List, long, Cell, int)} to simulate a bird launch.
+     */
     public void launch() {
         try {
             PigServer.connect(closestPig)
