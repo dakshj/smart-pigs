@@ -68,7 +68,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
             new ShelterInformer(getPig(), getNeighbors()).inform();
 
             if (attackEta > 0) {
-                final Optional<Occupant> emptyOccupantOptional = neighbors.stream()
+                final Optional<Occupant> emptyOccupantOptional = getNeighbors().stream()
                         .flatMap(Collection::stream)
                         .filter(occupant -> occupant.getOccupantType() == OccupantType.EMPTY)
                         .findFirst();
@@ -99,7 +99,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
         setFloodedBirdApproaching(true);
 
         new BirdAttackInformer(getPig(), new ArrayList<>(path), peers, attackEta, attackedCell,
-                currentHopCount, hopDelay).inform();
+                currentHopCount, getHopDelay()).inform();
     }
 
     @Override
@@ -107,26 +107,31 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
         setAliveStatus(false);
     }
 
-    /**
-     * Makes a pig take shelter away from the sender, who is a pig that is dead or about to die,
-     * and thus cause collateral death to this pig.
-     * <p>
-     * To take shelter, a pig needs to move at least two steps away from the sender.
-     *
-     * @param sender The pig that initiated {@link ShelterInformer}, and who is dead or about to die
-     */
     @Override
     public void takeShelter(final Pig sender) {
         getNeighbors().stream()
                 .flatMap(Collection::stream)
+
+                // Filter only empty cells
                 .filter(occupant -> occupant.getOccupantType() == OccupantType.EMPTY)
+
+                // Filter only those empty cells that are at least two steps away from the sender
                 .filter(occupant -> Math.max(
                         Math.abs(sender.getOccupiedCell().getRow() - occupant.getOccupiedCell().getRow()),
                         Math.abs(sender.getOccupiedCell().getCol() - occupant.getOccupiedCell().getCol())
                 ) >= 2)
+
+                // Select the first such empty cell
                 .findFirst()
                 .ifPresent(occupant -> {
+                            // Move to that empty cell
                             getPig().setOccupiedCell(occupant.getOccupiedCell());
+
+                            // Since this pig has moved to another cell,
+                            // its neighbors list is useless now
+                            setNeighbors(null);
+
+                            // Inform sender that this pig has moved
                             new NeighborCellUpdater(getPig(), sender).update();
                         }
                 );
@@ -185,6 +190,10 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     private void setMaxHopCount(final int maxHopCount) {
         this.maxHopCount = maxHopCount;
+    }
+
+    private long getHopDelay() {
+        return hopDelay;
     }
 
     private void setHopDelay(final long hopDelay) {

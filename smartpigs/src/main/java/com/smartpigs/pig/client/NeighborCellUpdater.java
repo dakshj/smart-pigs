@@ -16,6 +16,10 @@ public class NeighborCellUpdater {
         this.originator = originator;
     }
 
+    /**
+     * Remotely connects to an {@link #originator} pig so as to update a {@link #neighbor}'s
+     * updated cell location within the {@link #originator} pig's neighbors grid.
+     */
     public void update() {
         try {
             PigServer.connect(originator).updateNeighborCell(neighbor);

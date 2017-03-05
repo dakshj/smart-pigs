@@ -20,6 +20,11 @@ public class ShelterInformer {
         this.neighbors = neighbors;
     }
 
+    /**
+     * Informs all pig {@link #neighbors} of a {@link #sender} pig to take shelter.
+     * <p>
+     * The pig {@link #neighbors} will then find an appropriate empty cell to move to, if any.
+     */
     public void inform() {
         neighbors.stream()
                 .flatMap(Collection::stream)

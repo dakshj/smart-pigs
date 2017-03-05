@@ -31,6 +31,16 @@ public class BirdAttackInformer {
         this.hopDelay = hopDelay;
     }
 
+    /**
+     * Informs all peers of a pig about a bird that approaching.
+     * <p>
+     * Adds an artificial delay ({@link #hopDelay}) to simulate network latency.
+     * <p>
+     * Sends to only those peers which are not already in that specific broadcast path.
+     * <p>
+     * <strong>NOTE:</strong> A peer may be reached by multiple pigs, thus via multiple paths.
+     * Thus, maintaining a separate path {@link List} for each unique path is very important.
+     */
     public void inform() {
         path.add(sender);
 

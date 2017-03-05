@@ -8,15 +8,18 @@ import java.rmi.RemoteException;
 
 public class PigKiller {
 
-    private final Pig sender;
+    private final Pig pig;
 
-    public PigKiller(final Pig sender) {
-        this.sender = sender;
+    public PigKiller(final Pig pig) {
+        this.pig = pig;
     }
 
+    /**
+     * Remotely connects to a pig so as to kill it.
+     */
     public void kill() {
         try {
-            PigServer.connect(sender).killByFallingOver();
+            PigServer.connect(pig).killByFallingOver();
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
