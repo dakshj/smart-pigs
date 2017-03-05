@@ -7,11 +7,11 @@ import com.google.gson.JsonParser;
 import com.smartpigs.enums.OccupantType;
 import com.smartpigs.exception.ClosestPigNullException;
 import com.smartpigs.exception.OccupantsExceedCellsException;
-import com.smartpigs.model.Configuration;
 import com.smartpigs.game.client.BirdLauncher;
 import com.smartpigs.game.client.PigDataSender;
 import com.smartpigs.model.Address;
 import com.smartpigs.model.Cell;
+import com.smartpigs.model.Configuration;
 import com.smartpigs.model.Grid;
 import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -62,10 +64,30 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
         new PigDataSender(configuration, configuration.getGameServerAddress()).send();
 
-        new BirdLauncher(configuration.getClosestPig(),
-                configuration.getAttackEta(), configuration.getAttackedCell(),
-                configuration.getMaxHopCount())
-                .launch();
+        // If the attackedCell is a stone, then call stoneDestroyed() after waiting for attackEta
+        // Else call birdLaunched() on the closest pig
+        getConfiguration().getGrid().getOccupants().stream()
+                .flatMap(Collection::stream)
+                .findFirst()
+                .ifPresent(occupant -> {
+                    if (occupant.getOccupiedCell().equals(getConfiguration().getAttackedCell())) {
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                try {
+                                    stoneDestroyed(occupant);
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }, getConfiguration().getAttackEta());
+                    } else {
+                        new BirdLauncher(configuration.getClosestPig(),
+                                configuration.getAttackEta(), configuration.getAttackedCell(),
+                                configuration.getMaxHopCount())
+                                .launch();
+                    }
+                });
     }
 
     /**

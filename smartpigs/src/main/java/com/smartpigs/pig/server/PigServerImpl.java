@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class PigServerImpl extends UnicastRemoteObject implements PigServer {
@@ -80,13 +82,13 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
                     getPig().setOccupiedCell(emptyOccupantOptional.get().getOccupiedCell());
                     return;
                 } else {
-                    try {
-                        Thread.sleep(attackEta);
-                        killSelfAndAnotherOccupant();
-                        return;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            killSelfAndAnotherOccupant();
+                        }
+                    }, attackEta);
+                    return;
                 }
             } else {
                 killSelfAndAnotherOccupant();
