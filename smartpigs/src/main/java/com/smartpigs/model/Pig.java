@@ -8,7 +8,7 @@ public class Pig extends Occupant implements Serializable {
 
     private String id;
     private Address address;
-    private Set<Address> neighborAddresses;
+    private Set<Address> peerAddresses;
 
     public String getId() {
         return id;
@@ -18,16 +18,16 @@ public class Pig extends Occupant implements Serializable {
         return address;
     }
 
-    public Set<Address> getNeighborAddresses() {
-        return neighborAddresses;
+    public Set<Address> getPeerAddresses() {
+        return peerAddresses;
     }
 
-    public void addNeighborAddress(final Address neighborAddress) {
-        if (neighborAddresses == null) {
-            neighborAddresses = new HashSet<>();
+    public void addPeerAddress(final Address peerAddress) {
+        if (peerAddresses == null) {
+            peerAddresses = new HashSet<>();
         }
 
-        neighborAddresses.add(neighborAddress);
+        peerAddresses.add(peerAddress);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class Pig extends Occupant implements Serializable {
         return "Pig{" +
                 "id='" + id + '\'' +
                 ", address=" + address +
-                ", neighborAddresses=" + neighborAddresses +
+                ", peerAddresses=" + peerAddresses +
                 "} " + super.toString();
     }
 }

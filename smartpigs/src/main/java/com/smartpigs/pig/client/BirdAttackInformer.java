@@ -16,18 +16,18 @@ public class BirdAttackInformer {
 
     private final Address senderAddress;
     private final List<Address> path;
-    private final Set<Address> neighborAddresses;
+    private final Set<Address> peerAddresses;
     private final long attackEta;
     private final Cell attackedCell;
     private final int hopCount;
     private final long hopDelay;
 
     public BirdAttackInformer(final Address senderAddress, final List<Address> path,
-            final Set<Address> neighborAddresses, final long attackEta,
+            final Set<Address> peerAddresses, final long attackEta,
             final Cell attackedCell, final int hopCount, final long hopDelay) {
         this.senderAddress = senderAddress;
         this.path = path;
-        this.neighborAddresses = neighborAddresses;
+        this.peerAddresses = peerAddresses;
         this.attackEta = attackEta;
         this.attackedCell = attackedCell;
         this.hopCount = hopCount;
@@ -44,7 +44,7 @@ public class BirdAttackInformer {
         }
 
         // FIXME parallelStream() is not resulting into parallelism!
-        neighborAddresses.parallelStream()
+        peerAddresses.parallelStream()
                 .filter(address -> !path.contains(address))
                 .forEach(address -> {
                     final Registry registry;

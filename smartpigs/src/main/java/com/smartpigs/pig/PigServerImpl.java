@@ -49,7 +49,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
             throw new PigNotInitializedException();
         }
 
-        new BirdAttackInformer(pig.getAddress(), new ArrayList<>(), pig.getNeighborAddresses(),
+        new BirdAttackInformer(pig.getAddress(), new ArrayList<>(), pig.getPeerAddresses(),
                 attackEta, attackedCell, maxHopCount, hopDelay).inform();
     }
 
@@ -63,7 +63,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
         floodedBirdApproaching = true;
 
         new BirdAttackInformer(pig.getAddress(), new ArrayList<>(path),
-                pig.getNeighborAddresses(), attackEta, attackedCell,
+                pig.getPeerAddresses(), attackEta, attackedCell,
                 currentHopCount, hopDelay).inform();
     }
 

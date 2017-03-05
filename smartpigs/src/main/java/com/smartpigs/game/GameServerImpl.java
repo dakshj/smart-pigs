@@ -57,8 +57,6 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         new BirdLauncher(configuration.getClosestPig(),
                 configuration.getAttackEta(), configuration.getAttackedCell())
                 .launch();
-
-        // TODO create grid using configuration
     }
 
     /**
@@ -89,7 +87,7 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
         final Configuration configuration = gson.fromJson(jsonObject, Configuration.class);
 
-        mapPigIdsToNeighborAddresses(configuration, jsonObject);
+        mapPigIdsToPeerAddresses(configuration, jsonObject);
 
         initializeClosestPig(configuration, jsonObject);
 
@@ -179,13 +177,13 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
     }
 
     /**
-     * Maps each Pig to its neighbors' addresses by resolving their IDs to
+     * Maps each Pig to its peers' addresses by resolving their IDs to
      * {@link Address} references.
      *
      * @param configuration The configuration to fetch pigs from
-     * @param jsonObject    The configuration JSON Object to read neighbor IDs from
+     * @param jsonObject    The configuration JSON Object to read peer IDs from
      */
-    private void mapPigIdsToNeighborAddresses(final Configuration configuration,
+    private void mapPigIdsToPeerAddresses(final Configuration configuration,
             final JsonObject jsonObject) {
         final JsonArray network = jsonObject.getAsJsonArray("network");
 
@@ -193,11 +191,11 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
             final JsonObject object = element.getAsJsonObject();
             final Pig pig = configuration.getPigFromId(object.get("pig").getAsString());
 
-            final JsonArray neighbors = object.get("neighbors").getAsJsonArray();
+            final JsonArray peers = object.get("peers").getAsJsonArray();
 
-            neighbors.forEach(neighborId -> {
-                final Pig neighbor = configuration.getPigFromId(neighborId.getAsString());
-                pig.addNeighborAddress(neighbor.getAddress());
+            peers.forEach(peerId -> {
+                final Pig peer = configuration.getPigFromId(peerId.getAsString());
+                pig.addPeerAddress(peer.getAddress());
             });
         });
     }

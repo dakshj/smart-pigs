@@ -58,7 +58,7 @@
   "network": [
     {
       "pig": "1",
-      "neighbors": [
+      "peers": [
         "2",
         "4",
         "5"
@@ -66,28 +66,28 @@
     },
     {
       "pig": "2",
-      "neighbors": [
+      "peers": [
         "1",
         "5"
       ]
     },
     {
       "pig": "3",
-      "neighbors": [
+      "peers": [
         "4",
         "6"
       ]
     },
     {
       "pig": "4",
-      "neighbors": [
+      "peers": [
         "1",
         "3"
       ]
     },
     {
       "pig": "5",
-      "neighbors": [
+      "peers": [
         "1",
         "2",
         "6"
@@ -95,7 +95,7 @@
     },
     {
       "pig": "6",
-      "neighbors": [
+      "peers": [
         "3",
         "5"
       ]
