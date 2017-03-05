@@ -1,9 +1,11 @@
 package com.smartpigs.game;
 
 import com.smartpigs.model.Cell;
+import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +23,7 @@ public class Configuration {
 
     private transient Pig closestPig;
     private transient Map<Pig, Set<Pig>> peerMap;
+    private transient Map<Pig, List<List<Occupant>>> neighborMap;
 
     public Configuration(final int noOfPigs, final int noOfStones, final int rows, final int columns,
             final int maxHopCount, final int hopDelay, final long attackEta, final Cell attackedCell, final Set<Pig> pigSet) {
@@ -87,6 +90,14 @@ public class Configuration {
         this.closestPig = closestPig;
     }
 
+    public Set<Pig> getFromPeerMap(final Pig pig) {
+        if (peerMap == null) {
+            return null;
+        }
+
+        return peerMap.get(pig);
+    }
+
     void putInPeerMap(final Pig pig, final Set<Pig> peers) {
         if (peerMap == null) {
             peerMap = new HashMap<>();
@@ -95,12 +106,20 @@ public class Configuration {
         peerMap.put(pig, peers);
     }
 
-    public Set<Pig> getFromPeerMap(final Pig pig) {
-        if (peerMap == null) {
+    public List<List<Occupant>> getFromNeighborMap(final Pig pig) {
+        if (neighborMap == null) {
             return null;
         }
 
-        return peerMap.get(pig);
+        return neighborMap.get(pig);
+    }
+
+    void putInNeighborMap(final Pig pig, final List<List<Occupant>> neighbors) {
+        if (neighborMap == null) {
+            neighborMap = new HashMap<>();
+        }
+
+        neighborMap.put(pig, neighbors);
     }
 
     @Override
@@ -117,6 +136,7 @@ public class Configuration {
                 ", pigSet=" + pigSet +
                 ", closestPig=" + closestPig +
                 ", peerMap=" + peerMap +
+                ", neighborMap=" + neighborMap +
                 '}';
     }
 }

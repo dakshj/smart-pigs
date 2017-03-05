@@ -47,9 +47,8 @@ public class BirdAttackInformer {
         peers.parallelStream()
                 .filter(peer -> !path.contains(peer))
                 .forEach(peer -> {
-                    final Registry registry;
                     try {
-                        registry = LocateRegistry.getRegistry(peer.getAddress().getHost(),
+                        final Registry registry = LocateRegistry.getRegistry(peer.getAddress().getHost(),
                                 peer.getAddress().getPortNo());
                         PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
 

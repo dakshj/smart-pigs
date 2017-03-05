@@ -95,9 +95,47 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
         final Grid grid = createGrid(configuration);
 
+        buildNeighborMap(grid, configuration);
+
         validateConfiguration(configuration);
 
         return configuration;
+    }
+
+    private void buildNeighborMap(final Grid grid, final Configuration configuration) {
+        for (int row = 0; row < grid.getOccupants().size(); row++) {
+            for (int col = 0; col < grid.getOccupants().size(); col++) {
+                final Occupant occupant = grid.getOccupants().get(row).get(col);
+
+                if (occupant.getOccupantType() == OccupantType.PIG) {
+                    final Occupant[][] neighbors = new Occupant[3][3];
+                    setNeighbor(neighbors, configuration, grid, row - 1, col - 1, 0, 0);
+                    setNeighbor(neighbors, configuration, grid, row - 1, col, 0, 1);
+                    setNeighbor(neighbors, configuration, grid, row - 1, col + 1, 0, 2);
+                    setNeighbor(neighbors, configuration, grid, row, col - 1, 1, 0);
+                    setNeighbor(neighbors, configuration, grid, row, col + 1, 1, 2);
+                    setNeighbor(neighbors, configuration, grid, row + 1, col - 1, 2, 0);
+                    setNeighbor(neighbors, configuration, grid, row + 1, col, 2, 1);
+                    setNeighbor(neighbors, configuration, grid, row + 1, col + 1, 2, 2);
+
+                    configuration.putInNeighborMap((Pig) occupant,
+                            Arrays.stream(neighbors)
+                                    .map(Arrays::asList)
+                                    .collect(Collectors.toList())
+                    );
+                }
+            }
+        }
+    }
+
+    private void setNeighbor(final Occupant[][] neighbors, final Configuration configuration,
+            final Grid grid, final int rowGrid, final int colGrid, final int row, final int col) {
+        if (rowGrid >= 0 && rowGrid < configuration.getRows() &&
+                colGrid >= 0 && colGrid < configuration.getColumns()) {
+            neighbors[row][col] = grid.getOccupants().get(rowGrid).get(colGrid);
+        } else {
+            neighbors[row][col] = null;
+        }
     }
 
     /**

@@ -9,7 +9,7 @@ public class Occupant implements Serializable {
     private Cell occupiedCell;
     private OccupantType occupantType;
 
-    private Cell getOccupiedCell() {
+    public Cell getOccupiedCell() {
         return occupiedCell;
     }
 
@@ -17,7 +17,7 @@ public class Occupant implements Serializable {
         this.occupiedCell = occupiedCell;
     }
 
-    private OccupantType getOccupantType() {
+    public OccupantType getOccupantType() {
         return occupantType;
     }
 

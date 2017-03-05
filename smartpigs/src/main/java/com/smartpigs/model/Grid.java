@@ -10,7 +10,7 @@ public class Grid {
         this.occupants = occupants;
     }
 
-    private List<List<Occupant>> getOccupants() {
+    public List<List<Occupant>> getOccupants() {
         return occupants;
     }
 
