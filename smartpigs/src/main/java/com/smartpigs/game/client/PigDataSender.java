@@ -40,6 +40,7 @@ public class PigDataSender {
         try {
             final Registry registry = LocateRegistry.getRegistry(pig.getAddress().getHost(),
                     pig.getAddress().getPortNo());
+
             PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
             pigServer.receiveData(pig, configuration.getMaxHopCount(), configuration.getHopDelay());
         } catch (RemoteException | NotBoundException e) {

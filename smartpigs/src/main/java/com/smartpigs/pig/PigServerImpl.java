@@ -10,6 +10,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
@@ -18,6 +20,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     private Pig pig;
     private int maxHopCount;
     private long hopDelay;
+    private boolean floodedBirdApproaching = false;
 
     public PigServerImpl(final int portNo) throws RemoteException {
         try {
@@ -46,19 +49,22 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
             throw new PigNotInitializedException();
         }
 
-        new BirdAttackInformer(pig.getAddress(), pig.getNeighborAddresses(),
+        new BirdAttackInformer(pig.getAddress(), new ArrayList<>(), pig.getNeighborAddresses(),
                 attackEta, attackedCell, maxHopCount, hopDelay).inform();
     }
 
     @Override
-    public void birdApproaching(final Address senderAddress, final long attackEta,
+    public void birdApproaching(final List<Address> path, final long attackEta,
             final Cell attackedCell, final int currentHopCount) throws RemoteException {
-        if (currentHopCount == 0) {
+        if (currentHopCount == 0 || floodedBirdApproaching) {
             return;
         }
 
-        new BirdAttackInformer(pig.getAddress(), pig.getNeighborAddresses(),
-                attackEta, attackedCell, currentHopCount, hopDelay).inform();
+        floodedBirdApproaching = true;
+
+        new BirdAttackInformer(pig.getAddress(), new ArrayList<>(path),
+                pig.getNeighborAddresses(), attackEta, attackedCell,
+                currentHopCount, hopDelay).inform();
     }
 
     private void setPig(final Pig pig) {

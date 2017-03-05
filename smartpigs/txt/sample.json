@@ -3,7 +3,7 @@
   "noOfStones": 10,
   "rows": 5,
   "columns": 5,
-  "maxHopCount": 3,
+  "maxHopCount": 4,
   "hopDelay": 1000,
   "attackEta": 3000,
   "attackedCell": {
@@ -16,42 +16,42 @@
       "id": "1",
       "address": {
         "host": "localhost",
-        "portNo": 1099
+        "portNo": 1101
       }
     },
     {
       "id": "2",
       "address": {
         "host": "localhost",
-        "portNo": 1100
+        "portNo": 1102
       }
     },
     {
       "id": "3",
       "address": {
         "host": "localhost",
-        "portNo": 1101
+        "portNo": 1103
       }
     },
     {
       "id": "4",
       "address": {
         "host": "localhost",
-        "portNo": 1102
+        "portNo": 1104
       }
     },
     {
       "id": "5",
       "address": {
         "host": "localhost",
-        "portNo": 1103
+        "portNo": 1105
       }
     },
     {
       "id": "6",
       "address": {
         "host": "localhost",
-        "portNo": 1104
+        "portNo": 1106
       }
     }
   ],
