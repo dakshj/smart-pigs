@@ -1,14 +1,11 @@
 package com.smartpigs.model;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Pig extends Occupant implements Serializable {
 
     private String id;
     private Address address;
-    private Set<Address> peerAddresses;
 
     public String getId() {
         return id;
@@ -16,18 +13,6 @@ public class Pig extends Occupant implements Serializable {
 
     public Address getAddress() {
         return address;
-    }
-
-    public Set<Address> getPeerAddresses() {
-        return peerAddresses;
-    }
-
-    public void addPeerAddress(final Address peerAddress) {
-        if (peerAddresses == null) {
-            peerAddresses = new HashSet<>();
-        }
-
-        peerAddresses.add(peerAddress);
     }
 
     @Override
@@ -50,7 +35,6 @@ public class Pig extends Occupant implements Serializable {
         return "Pig{" +
                 "id='" + id + '\'' +
                 ", address=" + address +
-                ", peerAddresses=" + peerAddresses +
                 "} " + super.toString();
     }
 }

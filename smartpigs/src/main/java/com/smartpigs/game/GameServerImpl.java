@@ -25,6 +25,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -87,7 +88,7 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
         final Configuration configuration = gson.fromJson(jsonObject, Configuration.class);
 
-        mapPigIdsToPeerAddresses(configuration, jsonObject);
+        buildPeerMap(configuration, jsonObject);
 
         initializeClosestPig(configuration, jsonObject);
 
@@ -179,11 +180,13 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
     /**
      * Maps each Pig to its peers' addresses by resolving their IDs to
      * {@link Address} references.
+     * <p>
+     * Stores the built peer map into {@link Configuration#peerMap}.
      *
      * @param configuration The configuration to fetch pigs from
-     * @param jsonObject    The configuration JSON Object to read peer IDs from
+     * @param jsonObject    The configuration JSON Object to read peer IDs froms
      */
-    private void mapPigIdsToPeerAddresses(final Configuration configuration,
+    private void buildPeerMap(final Configuration configuration,
             final JsonObject jsonObject) {
         final JsonArray network = jsonObject.getAsJsonArray("network");
 
@@ -191,12 +194,17 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
             final JsonObject object = element.getAsJsonObject();
             final Pig pig = configuration.getPigFromId(object.get("pig").getAsString());
 
-            final JsonArray peers = object.get("peers").getAsJsonArray();
+            final JsonArray peersJsonArray = object.get("peers").getAsJsonArray();
 
-            peers.forEach(peerId -> {
+            final Set<Pig> peers = new HashSet<>();
+
+            peersJsonArray.forEach(peerId -> {
                 final Pig peer = configuration.getPigFromId(peerId.getAsString());
-                pig.addPeerAddress(peer.getAddress());
+
+                peers.add(peer);
             });
+
+            configuration.putInPeerMap(pig, peers);
         });
     }
 

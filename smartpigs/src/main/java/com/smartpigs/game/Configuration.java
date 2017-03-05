@@ -3,6 +3,8 @@ package com.smartpigs.game;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Pig;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class Configuration {
@@ -18,6 +20,7 @@ public class Configuration {
     private final Set<Pig> pigSet;
 
     private transient Pig closestPig;
+    private transient Map<Pig, Set<Pig>> peerMap;
 
     public Configuration(final int noOfPigs, final int noOfStones, final int rows, final int columns,
             final int maxHopCount, final int hopDelay, final long attackEta, final Cell attackedCell, final Set<Pig> pigSet) {
@@ -84,6 +87,22 @@ public class Configuration {
         this.closestPig = closestPig;
     }
 
+    void putInPeerMap(final Pig pig, final Set<Pig> peers) {
+        if (peerMap == null) {
+            peerMap = new HashMap<>();
+        }
+
+        peerMap.put(pig, peers);
+    }
+
+    public Set<Pig> getFromPeerMap(final Pig pig) {
+        if (peerMap == null) {
+            return null;
+        }
+
+        return peerMap.get(pig);
+    }
+
     @Override
     public String toString() {
         return "Configuration{" +
@@ -93,8 +112,11 @@ public class Configuration {
                 ", columns=" + columns +
                 ", maxHopCount=" + maxHopCount +
                 ", hopDelay=" + hopDelay +
+                ", attackEta=" + attackEta +
+                ", attackedCell=" + attackedCell +
                 ", pigSet=" + pigSet +
                 ", closestPig=" + closestPig +
+                ", peerMap=" + peerMap +
                 '}';
     }
 }

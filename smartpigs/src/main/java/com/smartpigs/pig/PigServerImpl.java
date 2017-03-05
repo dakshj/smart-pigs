@@ -1,7 +1,6 @@
 package com.smartpigs.pig;
 
 import com.smartpigs.exception.PigNotInitializedException;
-import com.smartpigs.model.Address;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Pig;
 import com.smartpigs.pig.client.BirdAttackInformer;
@@ -12,12 +11,14 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     public static final String NAME = "Pig Server";
 
     private Pig pig;
+    private Set<Pig> peers;
     private int maxHopCount;
     private long hopDelay;
     private boolean floodedBirdApproaching = false;
@@ -36,9 +37,10 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     }
 
     @Override
-    public void receiveData(final Pig pig, final int maxHopCount,
+    public void receiveData(final Pig pig, final Set<Pig> peers, final int maxHopCount,
             final long hopDelay) throws RemoteException {
         setPig(pig);
+        setPeers(peers);
         setMaxHopCount(maxHopCount);
         setHopDelay(hopDelay);
     }
@@ -49,12 +51,12 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
             throw new PigNotInitializedException();
         }
 
-        new BirdAttackInformer(pig.getAddress(), new ArrayList<>(), pig.getPeerAddresses(),
+        new BirdAttackInformer(pig, new ArrayList<>(), peers,
                 attackEta, attackedCell, maxHopCount, hopDelay).inform();
     }
 
     @Override
-    public void birdApproaching(final List<Address> path, final long attackEta,
+    public void birdApproaching(final List<Pig> path, final long attackEta,
             final Cell attackedCell, final int currentHopCount) throws RemoteException {
         if (currentHopCount == 0 || floodedBirdApproaching) {
             return;
@@ -62,8 +64,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
         floodedBirdApproaching = true;
 
-        new BirdAttackInformer(pig.getAddress(), new ArrayList<>(path),
-                pig.getPeerAddresses(), attackEta, attackedCell,
+        new BirdAttackInformer(pig, new ArrayList<>(path), peers, attackEta, attackedCell,
                 currentHopCount, hopDelay).inform();
     }
 
@@ -77,5 +78,9 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     private void setHopDelay(final long hopDelay) {
         this.hopDelay = hopDelay;
+    }
+
+    private void setPeers(final Set<Pig> peers) {
+        this.peers = peers;
     }
 }

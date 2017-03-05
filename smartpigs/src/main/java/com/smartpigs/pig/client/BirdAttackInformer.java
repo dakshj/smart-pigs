@@ -1,7 +1,7 @@
 package com.smartpigs.pig.client;
 
-import com.smartpigs.model.Address;
 import com.smartpigs.model.Cell;
+import com.smartpigs.model.Pig;
 import com.smartpigs.pig.PigServer;
 import com.smartpigs.pig.PigServerImpl;
 
@@ -14,20 +14,20 @@ import java.util.Set;
 
 public class BirdAttackInformer {
 
-    private final Address senderAddress;
-    private final List<Address> path;
-    private final Set<Address> peerAddresses;
+    private final Pig sender;
+    private final List<Pig> path;
+    private final Set<Pig> peers;
     private final long attackEta;
     private final Cell attackedCell;
     private final int hopCount;
     private final long hopDelay;
 
-    public BirdAttackInformer(final Address senderAddress, final List<Address> path,
-            final Set<Address> peerAddresses, final long attackEta,
+    public BirdAttackInformer(final Pig sender, final List<Pig> path,
+            final Set<Pig> peers, final long attackEta,
             final Cell attackedCell, final int hopCount, final long hopDelay) {
-        this.senderAddress = senderAddress;
+        this.sender = sender;
         this.path = path;
-        this.peerAddresses = peerAddresses;
+        this.peers = peers;
         this.attackEta = attackEta;
         this.attackedCell = attackedCell;
         this.hopCount = hopCount;
@@ -35,7 +35,7 @@ public class BirdAttackInformer {
     }
 
     public void inform() {
-        path.add(senderAddress);
+        path.add(sender);
 
         try {
             Thread.sleep(hopDelay);
@@ -44,13 +44,13 @@ public class BirdAttackInformer {
         }
 
         // FIXME parallelStream() is not resulting into parallelism!
-        peerAddresses.parallelStream()
-                .filter(address -> !path.contains(address))
-                .forEach(address -> {
+        peers.parallelStream()
+                .filter(peer -> !path.contains(peer))
+                .forEach(peer -> {
                     final Registry registry;
                     try {
-                        registry = LocateRegistry.getRegistry(address.getHost(),
-                                address.getPortNo());
+                        registry = LocateRegistry.getRegistry(peer.getAddress().getHost(),
+                                peer.getAddress().getPortNo());
                         PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
 
                         pigServer.birdApproaching(path, attackEta - hopDelay,
