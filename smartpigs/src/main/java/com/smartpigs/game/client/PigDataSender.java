@@ -43,7 +43,8 @@ public class PigDataSender {
 
             PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
             pigServer.receiveData(pig, configuration.getFromPeerMap(pig),
-                    configuration.getMaxHopCount(), configuration.getHopDelay());
+                    configuration.getFromNeighborMap(pig), configuration.getMaxHopCount(),
+                    configuration.getHopDelay());
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
