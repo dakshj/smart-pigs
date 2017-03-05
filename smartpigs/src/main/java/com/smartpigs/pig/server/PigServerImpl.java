@@ -144,20 +144,24 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     @Override
     public void updateNeighborCell(final Pig neighbor) {
-        getNeighbors().stream()
-                .flatMap(Collection::stream)
-                .filter(occupant -> {
-                    if (occupant instanceof Pig) {
-                        final Pig pig = (Pig) occupant;
-                        if (pig.getId().equals(neighbor.getId())) {
-                            return true;
-                        }
-                    }
+        for (int row = 0; row < getNeighbors().size(); row++) {
+            for (int col = 0; col < getNeighbors().size(); col++) {
+                final Occupant occupant = getNeighbors().get(row).get(col);
+                if (occupant.getOccupantType() == OccupantType.PIG &&
+                        ((Pig) occupant).getId().equals(neighbor.getId())) {
 
-                    return false;
-                }).findFirst()
-                .ifPresent(occupant ->
-                        occupant.setOccupiedCell(neighbor.getOccupiedCell()));
+                    // Set old cell of neighbor as empty
+                    final Occupant emptyOccupant = new Occupant();
+                    emptyOccupant.setOccupantType(OccupantType.EMPTY);
+                    emptyOccupant.setOccupiedCell(new Cell(row, col));
+                    getNeighbors().get(row).set(col, emptyOccupant);
+
+                    // Set new cell of neighbor, as neighbor
+                    getNeighbors().get(neighbor.getOccupiedCell().getRow())
+                            .set(neighbor.getOccupiedCell().getCol(), neighbor);
+                }
+            }
+        }
     }
 
     private void killSelfAndAnotherOccupant() {

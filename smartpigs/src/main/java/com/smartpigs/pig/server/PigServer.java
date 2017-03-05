@@ -17,8 +17,6 @@ import java.util.Set;
 
 public interface PigServer extends Remote {
 
-    // TODO Add Javadoc to all methods!
-
     /**
      * Establishes a connection with a {@link PigServer} identified by {@code pig}.
      *
@@ -87,6 +85,11 @@ public interface PigServer extends Remote {
     void birdApproaching(List<Pig> path, long attackEta, Cell attackedCell, int currentHopCount)
             throws RemoteException;
 
+    /**
+     * Kills the pig because of collateral death.
+     *
+     * @throws RemoteException Thrown when a Java RMI exception occurs
+     */
     void killByFallingOver() throws RemoteException;
 
     /**
@@ -99,5 +102,15 @@ public interface PigServer extends Remote {
      */
     void takeShelter(Pig sender) throws RemoteException;
 
+    /**
+     * Updates the {@link Cell} of a neighbor when that neighbor moves itself.
+     * <p>
+     * Useful since after a pig dies and randomly selects the cell which was the original cell of
+     * the neighbor, it should have updated data that this cell is actually empty and does not
+     * contain the neighbor.
+     *
+     * @param neighbor The neighbor which was moved to another cell
+     * @throws RemoteException Thrown when a Java RMI exception occurs
+     */
     void updateNeighborCell(Pig neighbor) throws RemoteException;
 }
