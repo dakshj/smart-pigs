@@ -1,4 +1,4 @@
-package com.smartpigs.game;
+package com.smartpigs.game.server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.smartpigs.enums.OccupantType;
 import com.smartpigs.exception.ClosestPigNullException;
 import com.smartpigs.exception.OccupantsExceedCellsException;
+import com.smartpigs.model.Configuration;
 import com.smartpigs.game.client.BirdLauncher;
 import com.smartpigs.game.client.PigDataSender;
 import com.smartpigs.model.Address;
@@ -14,7 +15,7 @@ import com.smartpigs.model.Cell;
 import com.smartpigs.model.Grid;
 import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
-import com.smartpigs.pig.PigServer;
+import com.smartpigs.pig.server.PigServer;
 
 import java.io.File;
 import java.io.IOException;

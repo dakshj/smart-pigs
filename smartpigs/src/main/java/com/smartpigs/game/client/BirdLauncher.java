@@ -2,13 +2,10 @@ package com.smartpigs.game.client;
 
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Pig;
-import com.smartpigs.pig.PigServer;
-import com.smartpigs.pig.PigServerImpl;
+import com.smartpigs.pig.server.PigServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
 public class BirdLauncher {
@@ -28,11 +25,8 @@ public class BirdLauncher {
 
     public void launch() {
         try {
-            final Registry registry = LocateRegistry.getRegistry(closestPig.getAddress().getHost(),
-                    closestPig.getAddress().getPortNo());
-            PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
-
-            pigServer.birdApproaching(new ArrayList<>(), attackEta, attackedCell, maxHopCount);
+            PigServer.connect(closestPig)
+                    .birdApproaching(new ArrayList<>(), attackEta, attackedCell, maxHopCount);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }

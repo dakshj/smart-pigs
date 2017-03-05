@@ -3,13 +3,10 @@ package com.smartpigs.pig.client;
 import com.smartpigs.enums.OccupantType;
 import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
-import com.smartpigs.pig.PigServer;
-import com.smartpigs.pig.PigServerImpl;
+import com.smartpigs.pig.server.PigServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,28 +20,20 @@ public class ShelterInformer {
         this.neighbors = neighbors;
     }
 
-    public void inform(final NeighborCellUpdateListener listener) {
+    public void inform() {
         neighbors.stream()
                 .flatMap(Collection::stream)
                 .filter(occupant -> occupant.getOccupantType() == OccupantType.PIG)
-                .forEach(occupant -> inform((Pig) occupant, listener));
+                .forEach(occupant -> inform((Pig) occupant));
     }
 
-    private boolean inform(final Pig pig, final NeighborCellUpdateListener listener) {
+    private boolean inform(final Pig pig) {
         try {
-            final Registry registry = LocateRegistry.getRegistry(pig.getAddress().getHost(),
-                    pig.getAddress().getPortNo());
-            PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
-
-            pigServer.takeShelter(sender);
+            PigServer.connect(pig).takeShelter(sender);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
 
         return false;
-    }
-
-    public interface NeighborCellUpdateListener {
-        void onCellUpdated(final Pig neighbor);
     }
 }

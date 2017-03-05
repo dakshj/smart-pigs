@@ -2,13 +2,10 @@ package com.smartpigs.pig.client;
 
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Pig;
-import com.smartpigs.pig.PigServer;
-import com.smartpigs.pig.PigServerImpl;
+import com.smartpigs.pig.server.PigServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Set;
 
@@ -48,12 +45,9 @@ public class BirdAttackInformer {
                 .filter(peer -> !path.contains(peer))
                 .forEach(peer -> {
                     try {
-                        final Registry registry = LocateRegistry.getRegistry(peer.getAddress().getHost(),
-                                peer.getAddress().getPortNo());
-                        PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
-
-                        pigServer.birdApproaching(path, attackEta - hopDelay,
-                                attackedCell, hopCount - 1);
+                        PigServer.connect(peer)
+                                .birdApproaching(path, attackEta - hopDelay,
+                                        attackedCell, hopCount - 1);
                     } catch (RemoteException | NotBoundException e) {
                         e.printStackTrace();
                     }

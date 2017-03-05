@@ -1,8 +1,4 @@
-package com.smartpigs.game;
-
-import com.smartpigs.model.Cell;
-import com.smartpigs.model.Occupant;
-import com.smartpigs.model.Pig;
+package com.smartpigs.model;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,19 +34,19 @@ public class Configuration {
         this.pigSet = pigSet;
     }
 
-    int getNoOfPigs() {
+    public int getNoOfPigs() {
         return noOfPigs;
     }
 
-    int getNoOfStones() {
+    public int getNoOfStones() {
         return noOfStones;
     }
 
-    int getRows() {
+    public int getRows() {
         return rows;
     }
 
-    int getColumns() {
+    public int getColumns() {
         return columns;
     }
 
@@ -62,11 +58,11 @@ public class Configuration {
         return hopDelay;
     }
 
-    long getAttackEta() {
+    public long getAttackEta() {
         return attackEta;
     }
 
-    Cell getAttackedCell() {
+    public Cell getAttackedCell() {
         return attackedCell;
     }
 
@@ -74,7 +70,7 @@ public class Configuration {
         return pigSet;
     }
 
-    Pig getPigFromId(final String pigId) {
+    public Pig getPigFromId(final String pigId) {
         //noinspection OptionalGetWithoutIsPresent
         return getPigSet().stream()
                 .filter(pig -> pig.getId().equals(pigId))
@@ -82,11 +78,11 @@ public class Configuration {
                 .get();
     }
 
-    Pig getClosestPig() {
+    public Pig getClosestPig() {
         return closestPig;
     }
 
-    void setClosestPig(final Pig closestPig) {
+    public void setClosestPig(final Pig closestPig) {
         this.closestPig = closestPig;
     }
 
@@ -98,7 +94,7 @@ public class Configuration {
         return peerMap.get(pig);
     }
 
-    void putInPeerMap(final Pig pig, final Set<Pig> peers) {
+    public void putInPeerMap(final Pig pig, final Set<Pig> peers) {
         if (peerMap == null) {
             peerMap = new HashMap<>();
         }
@@ -114,7 +110,7 @@ public class Configuration {
         return neighborMap.get(pig);
     }
 
-    void putInNeighborMap(final Pig pig, final List<List<Occupant>> neighbors) {
+    public void putInNeighborMap(final Pig pig, final List<List<Occupant>> neighbors) {
         if (neighborMap == null) {
             neighborMap = new HashMap<>();
         }

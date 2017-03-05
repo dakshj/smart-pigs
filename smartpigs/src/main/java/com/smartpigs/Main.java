@@ -1,8 +1,8 @@
 package com.smartpigs;
 
 import com.smartpigs.enums.ExecutionMode;
-import com.smartpigs.game.GameServerImpl;
-import com.smartpigs.pig.PigServerImpl;
+import com.smartpigs.game.server.GameServerImpl;
+import com.smartpigs.pig.server.PigServerImpl;
 
 import java.rmi.RemoteException;
 

@@ -1,7 +1,8 @@
-package com.smartpigs.pig;
+package com.smartpigs.pig.server;
 
 import com.smartpigs.enums.OccupantType;
 import com.smartpigs.exception.PigNotInitializedException;
+import com.smartpigs.pig.client.NeighborCellUpdater;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
@@ -22,7 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
-    public static final String NAME = "Pig Server";
+    static final String NAME = "Pig Server";
 
     private boolean aliveStatus;
     private boolean floodedBirdApproaching = false;
@@ -69,21 +70,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
         }
 
         if (getPig().getOccupiedCell().equals(attackedCell)) {
-            new ShelterInformer(getPig(), getNeighbors()).inform(neighbor ->
-                    getNeighbors().stream()
-                            .flatMap(Collection::stream)
-                            .filter(occupant -> {
-                                if (occupant instanceof Pig) {
-                                    final Pig pig = (Pig) occupant;
-                                    if (pig.getId().equals(neighbor.getId())) {
-                                        return true;
-                                    }
-                                }
-
-                                return false;
-                            }).findFirst()
-                            .ifPresent(occupant ->
-                                    occupant.setOccupiedCell(neighbor.getOccupiedCell())));
+            new ShelterInformer(getPig(), getNeighbors()).inform();
 
             if (attackEta > 0) {
                 final Optional<Occupant> emptyOccupantOptional = neighbors.stream()
@@ -143,7 +130,29 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
                         Math.abs(sender.getOccupiedCell().getCol() - occupant.getOccupiedCell().getCol())
                 ) >= 2)
                 .findFirst()
-                .ifPresent(occupant -> getPig().setOccupiedCell(occupant.getOccupiedCell()));
+                .ifPresent(occupant -> {
+                            getPig().setOccupiedCell(occupant.getOccupiedCell());
+                            new NeighborCellUpdater(getPig(), sender).update();
+                        }
+                );
+    }
+
+    @Override
+    public void updateNeighborCell(final Pig neighbor) {
+        getNeighbors().stream()
+                .flatMap(Collection::stream)
+                .filter(occupant -> {
+                    if (occupant instanceof Pig) {
+                        final Pig pig = (Pig) occupant;
+                        if (pig.getId().equals(neighbor.getId())) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }).findFirst()
+                .ifPresent(occupant ->
+                        occupant.setOccupiedCell(neighbor.getOccupiedCell()));
     }
 
     private void killSelfAndAnotherOccupant() {

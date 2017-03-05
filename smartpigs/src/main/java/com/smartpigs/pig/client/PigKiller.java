@@ -1,13 +1,10 @@
 package com.smartpigs.pig.client;
 
 import com.smartpigs.model.Pig;
-import com.smartpigs.pig.PigServer;
-import com.smartpigs.pig.PigServerImpl;
+import com.smartpigs.pig.server.PigServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 public class PigKiller {
 
@@ -19,11 +16,7 @@ public class PigKiller {
 
     public void kill() {
         try {
-            final Registry registry = LocateRegistry.getRegistry(sender.getAddress().getHost(),
-                    sender.getAddress().getPortNo());
-            PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
-
-            pigServer.killByFallingOver();
+            PigServer.connect(sender).killByFallingOver();
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }

@@ -1,14 +1,11 @@
 package com.smartpigs.game.client;
 
-import com.smartpigs.game.Configuration;
+import com.smartpigs.model.Configuration;
 import com.smartpigs.model.Pig;
-import com.smartpigs.pig.PigServer;
-import com.smartpigs.pig.PigServerImpl;
+import com.smartpigs.pig.server.PigServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 /**
  * Creates multiple Java RMI Client instances to send required data to all Pig Servers.
@@ -38,11 +35,7 @@ public class PigDataSender {
      */
     private void sendPigData(final Pig pig) {
         try {
-            final Registry registry = LocateRegistry.getRegistry(pig.getAddress().getHost(),
-                    pig.getAddress().getPortNo());
-
-            PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
-            pigServer.receiveData(pig, configuration.getFromPeerMap(pig),
+            PigServer.connect(pig).receiveData(pig, configuration.getFromPeerMap(pig),
                     configuration.getFromNeighborMap(pig), configuration.getMaxHopCount(),
                     configuration.getHopDelay());
         } catch (RemoteException | NotBoundException e) {
