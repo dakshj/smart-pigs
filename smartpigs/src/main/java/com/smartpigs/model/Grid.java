@@ -16,6 +16,8 @@ public class Grid {
 
     @Override
     public String toString() {
+        // TODO print grid in a prettier manner
+
         return "Grid{" +
                 "occupants=" + occupants +
                 '}';

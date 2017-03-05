@@ -16,6 +16,14 @@ public class Pig extends Occupant implements Serializable {
         return address;
     }
 
+    private boolean isAlive() {
+        return alive;
+    }
+
+    public void kill() {
+        alive = false;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -23,12 +31,15 @@ public class Pig extends Occupant implements Serializable {
 
         final Pig pig = (Pig) o;
 
-        return id.equals(pig.id);
+        return alive == pig.alive && id.equals(pig.id) && address.equals(pig.address);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        int result = id.hashCode();
+        result = 31 * result + address.hashCode();
+        result = 31 * result + (alive ? 1 : 0);
+        return result;
     }
 
     @Override
@@ -36,14 +47,7 @@ public class Pig extends Occupant implements Serializable {
         return "Pig{" +
                 "id='" + id + '\'' +
                 ", address=" + address +
+                ", alive=" + alive +
                 "} " + super.toString();
-    }
-
-    private boolean isAlive() {
-        return alive;
-    }
-
-    public void kill() {
-        alive = false;
     }
 }

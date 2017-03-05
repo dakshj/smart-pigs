@@ -26,5 +26,13 @@ public interface GameServer extends Remote {
         return (GameServer) registry.lookup(GameServerImpl.NAME);
     }
 
+    /**
+     * When a stone has been destroyed by either a collateral pig death, or by a bird attack,
+     * control is transferred to {@link GameServer}, since that is the entity responsible for
+     * selecting which other cell the stone will fall on.
+     *
+     * @param stoneOccupant The stone that needs to fall on another cell
+     * @throws RemoteException Thrown when a Java RMI exception occurs
+     */
     void stoneDestroyed(Occupant stoneOccupant) throws RemoteException;
 }

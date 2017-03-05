@@ -27,15 +27,13 @@ public class PigDataSender {
         this.gameServerAddress = gameServerAddress;
     }
 
+    /**
+     * Sends the required data to every {@link PigServer} by creating an RMI connection.
+     */
     public void send() {
         configuration.getPigSet().forEach(this::send);
     }
 
-    /**
-     * Creates an RMI connection to every {@link PigServer} and sends the required data.
-     *
-     * @param pig The pig to connect to
-     */
     private void send(final Pig pig) {
         try {
             PigServer.connect(pig).receiveData(gameServerAddress, pig,

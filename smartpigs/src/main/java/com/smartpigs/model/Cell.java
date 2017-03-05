@@ -21,6 +21,23 @@ public class Cell implements Serializable {
     }
 
     @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Cell cell = (Cell) o;
+
+        return row == cell.row && col == cell.col;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = row;
+        result = 31 * result + col;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return row + "," + col;
     }
