@@ -6,6 +6,7 @@ public class Pig extends Occupant implements Serializable {
 
     private String id;
     private Address address;
+    private boolean alive = true;
 
     public String getId() {
         return id;
@@ -36,5 +37,13 @@ public class Pig extends Occupant implements Serializable {
                 "id='" + id + '\'' +
                 ", address=" + address +
                 "} " + super.toString();
+    }
+
+    private boolean isAlive() {
+        return alive;
+    }
+
+    public void kill() {
+        alive = false;
     }
 }

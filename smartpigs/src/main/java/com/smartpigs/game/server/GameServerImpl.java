@@ -21,11 +21,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -34,27 +36,31 @@ import java.util.stream.IntStream;
 
 public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
-    private static final String NAME = "Game Server";
+    // TODO Maintain if a stone has been destroyed already or not, to prevent a random chain of one stone falling on another, and the other falling on the same initial stone, and so on...
+
+    static final String NAME = "Game Server";
+
+    private Configuration configuration;
 
     /**
      * Creates a Game Server, reads the {@link Configuration} from a
      * configuration file, initializes grids and grid occupants, and provides runtime information
      * to each of the Pig nodes running on their respective {@link PigServer}s.
      *
-     * @param portNo         The port number to start the Game Server on
      * @param configFilePath The file path from which to read the configuration
      * @throws RemoteException Thrown when a Java RMI exception occurs
      */
-    public GameServerImpl(final int portNo, final String configFilePath) throws RemoteException {
+    public GameServerImpl(final String configFilePath) throws RemoteException {
+        setConfiguration(readConfigurationFromFile(configFilePath));
+
         try {
-            startServer(portNo);
+            startServer(getConfiguration().getGameServerAddress().getPortNo());
         } catch (RemoteException ignored) {
-            System.out.println(NAME + "@" + portNo + " failed to start!");
+            System.out.println(NAME + "@" + getConfiguration().getGameServerAddress().getPortNo()
+                    + " failed to start!");
         }
 
-        final Configuration configuration = readConfigurationFromFile(configFilePath);
-
-        new PigDataSender(configuration).send();
+        new PigDataSender(configuration, configuration.getGameServerAddress()).send();
 
         new BirdLauncher(configuration.getClosestPig(),
                 configuration.getAttackEta(), configuration.getAttackedCell(),
@@ -98,9 +104,9 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
         initializeClosestPig(configuration, jsonObject);
 
-        final Grid grid = createGrid(configuration);
+        configuration.setGrid(getCreatedGrid(configuration));
 
-        buildNeighborMap(grid, configuration);
+        buildNeighborMap(configuration.getGrid(), configuration);
 
         validateConfiguration(configuration);
 
@@ -176,7 +182,7 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
      * @param configuration The configuration to use while creating a random grid
      * @return The grid created using the given configuration
      */
-    private Grid createGrid(final Configuration configuration) {
+    private Grid getCreatedGrid(final Configuration configuration) {
         final Occupant[][] occupants = new Occupant[configuration.getRows()][configuration.getColumns()];
 
         addOccupantsToGrid(configuration.getPigSet(), OccupantType.PIG, occupants,
@@ -339,5 +345,65 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         }
 
         return builder.toString();
+    }
+
+    @Override
+    public void stoneDestroyed(final Occupant stoneOccupant) throws RemoteException {
+        // Since stoneOccupant has fallen, we can set it as an EMPTY Occupant
+        // in the configuration's grid
+        getConfiguration().getGrid().getOccupants().stream()
+                .flatMap(Collection::stream)
+                .filter(occupant ->
+                        occupant.getOccupiedCell().equals(stoneOccupant.getOccupiedCell()))
+                .findFirst()
+                .ifPresent(occupant -> occupant.setOccupantType(OccupantType.EMPTY));
+
+        // Randomly select a Cell for stoneOccupant to fall on
+        int row = stoneOccupant.getOccupiedCell().getRow()
+                + ThreadLocalRandom.current().nextInt(-1, 2);
+        int col = stoneOccupant.getOccupiedCell().getCol()
+                + ThreadLocalRandom.current().nextInt(-1, 2);
+
+        final Cell stoneFallingCell = new Cell(row, col);
+
+        if (stoneFallingCell.equals(stoneOccupant.getOccupiedCell()) ||
+                row < 0 || row >= getConfiguration().getRows() ||
+                col < 0 || col >= getConfiguration().getColumns()) {
+            // Regenerate the random Cell since previous Cell was invalid
+            stoneDestroyed(stoneOccupant);
+            return;
+        }
+
+        getConfiguration().getGrid().getOccupants().stream()
+                .flatMap(Collection::stream)
+                .filter(occupant -> occupant.getOccupiedCell().equals(stoneFallingCell))
+                .findFirst()
+                .ifPresent(occupant -> {
+                    switch (occupant.getOccupantType()) {
+                        case PIG:
+                            try {
+                                PigServer.connect(((Pig) occupant)).killByFallingOver();
+                            } catch (RemoteException | NotBoundException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+
+                        case STONE:
+                            try {
+                                stoneDestroyed(occupant);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                    }
+                });
+    }
+
+    private Configuration getConfiguration() {
+        return configuration;
+    }
+
+    private void setConfiguration(final Configuration configuration) {
+        this.configuration = configuration;
     }
 }

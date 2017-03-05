@@ -10,6 +10,10 @@
     "row": 3,
     "col": 4
   },
+  "gameServerAddress": {
+    "host": "localhost",
+    "portNo": 1099
+  },
   "closestPig": "2",
   "pigSet": [
     {

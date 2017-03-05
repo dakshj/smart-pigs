@@ -15,14 +15,17 @@ public class Configuration {
     private final long hopDelay;
     private final long attackEta;
     private final Cell attackedCell;
+    private final Address gameServerAddress;
     private final Set<Pig> pigSet;
 
     private transient Pig closestPig;
     private transient Map<Pig, Set<Pig>> peerMap;
     private transient Map<Pig, List<List<Occupant>>> neighborMap;
+    private Grid grid;
 
     public Configuration(final int noOfPigs, final int noOfStones, final int rows, final int columns,
-            final int maxHopCount, final int hopDelay, final long attackEta, final Cell attackedCell, final Set<Pig> pigSet) {
+            final int maxHopCount, final int hopDelay, final long attackEta, final Cell attackedCell,
+            final Address gameServerAddress, final Set<Pig> pigSet) {
         this.noOfPigs = noOfPigs;
         this.noOfStones = noOfStones;
         this.rows = rows;
@@ -31,6 +34,7 @@ public class Configuration {
         this.hopDelay = hopDelay;
         this.attackEta = attackEta;
         this.attackedCell = attackedCell;
+        this.gameServerAddress = gameServerAddress;
         this.pigSet = pigSet;
     }
 
@@ -64,6 +68,10 @@ public class Configuration {
 
     public Cell getAttackedCell() {
         return attackedCell;
+    }
+
+    public Address getGameServerAddress() {
+        return gameServerAddress;
     }
 
     public Set<Pig> getPigSet() {
@@ -118,6 +126,14 @@ public class Configuration {
         neighborMap.put(pig, neighbors);
     }
 
+    public Grid getGrid() {
+        return grid;
+    }
+
+    public void setGrid(final Grid grid) {
+        this.grid = grid;
+    }
+
     @Override
     public String toString() {
         return "Configuration{" +
@@ -129,10 +145,12 @@ public class Configuration {
                 ", hopDelay=" + hopDelay +
                 ", attackEta=" + attackEta +
                 ", attackedCell=" + attackedCell +
+                ", gameServerAddress=" + gameServerAddress +
                 ", pigSet=" + pigSet +
                 ", closestPig=" + closestPig +
                 ", peerMap=" + peerMap +
                 ", neighborMap=" + neighborMap +
+                ", grid=" + grid +
                 '}';
     }
 }

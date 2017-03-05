@@ -19,12 +19,9 @@ public class Main {
      *             <p>
      *             args[1]:
      *             <p>
-     *             The port number to start the server on.
+     *             <i>For Game Server:</i> The file path of the configuration file.
      *             <p>
-     *             <p>
-     *             args[2]: <i>(Only required when starting a Game Server)</i>
-     *             <p>
-     *             The file path of the configuration file.
+     *             <i>For Pig Server:</i> The port number to start the server on.
      * @throws RemoteException Thrown when a Java RMI exception occurs
      */
     public static void main(String[] args) throws RemoteException {
@@ -44,7 +41,7 @@ public class Main {
         assert executionMode != null;
         switch (executionMode) {
             case GAME_SERVER:
-                new GameServerImpl(Integer.parseInt(args[1]), args[2]);
+                new GameServerImpl(args[1]);
                 break;
 
             case PIG_SERVER:

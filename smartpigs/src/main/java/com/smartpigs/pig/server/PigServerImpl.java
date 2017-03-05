@@ -1,10 +1,12 @@
 package com.smartpigs.pig.server;
 
 import com.smartpigs.enums.OccupantType;
+import com.smartpigs.model.Address;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
 import com.smartpigs.pig.client.BirdAttackInformer;
+import com.smartpigs.pig.client.FallingOnStoneInformer;
 import com.smartpigs.pig.client.NeighborCellUpdater;
 import com.smartpigs.pig.client.PigKiller;
 import com.smartpigs.pig.client.ShelterInformer;
@@ -24,8 +26,8 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     static final String NAME = "Pig Server";
 
-    private boolean aliveStatus;
     private boolean floodedBirdApproaching = false;
+    private Address gameServerAddress;
     private Pig pig;
     private Set<Pig> peers;
     private List<List<Occupant>> neighbors;
@@ -46,9 +48,11 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     }
 
     @Override
-    public void receiveData(final Pig pig, final Set<Pig> peers, final List<List<Occupant>> neighbors,
+    public void receiveData(final Address gameServerAddress, final Pig pig, final Set<Pig> peers,
+            final List<List<Occupant>> neighbors,
             final int maxHopCount, final long hopDelay) throws RemoteException {
         resetLocalData();
+        setGameServerAddress(gameServerAddress);
         setPig(pig);
         setPeers(peers);
         setNeighbors(neighbors);
@@ -57,7 +61,6 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     }
 
     private void resetLocalData() {
-        setAliveStatus(true);
         setFloodedBirdApproaching(false);
     }
 
@@ -104,7 +107,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     @Override
     public void killByFallingOver() throws RemoteException {
-        setAliveStatus(false);
+        getPig().kill();
     }
 
     @Override
@@ -156,7 +159,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     }
 
     private void killSelfAndAnotherOccupant() {
-        setAliveStatus(false);
+        getPig().kill();
 
         final int row = ThreadLocalRandom.current().nextInt(0, 3);
         final int col = ThreadLocalRandom.current().nextInt(0, 3);
@@ -174,10 +177,17 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
                 break;
 
             case STONE:
-                // TODO Tell Game Server that this pig has fallen onto a stone
-                // TODO Game Server will then choose a random Cell for the stone to drop and kill accordingly
+                new FallingOnStoneInformer(getGameServerAddress(), occupant).inform();
                 break;
         }
+    }
+
+    private Address getGameServerAddress() {
+        return gameServerAddress;
+    }
+
+    private void setGameServerAddress(final Address gameServerAddress) {
+        this.gameServerAddress = gameServerAddress;
     }
 
     private Pig getPig() {
@@ -218,9 +228,5 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     private void setFloodedBirdApproaching(final boolean floodedBirdApproaching) {
         this.floodedBirdApproaching = floodedBirdApproaching;
-    }
-
-    private void setAliveStatus(final boolean aliveStatus) {
-        this.aliveStatus = aliveStatus;
     }
 }

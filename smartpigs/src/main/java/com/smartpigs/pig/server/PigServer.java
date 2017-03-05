@@ -1,6 +1,7 @@
 package com.smartpigs.pig.server;
 
 import com.smartpigs.game.server.GameServer;
+import com.smartpigs.model.Address;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
@@ -40,14 +41,15 @@ public interface PigServer extends Remote {
      * Remote data fetched from parameters overwrites the data currently stored
      * in the running instance, if any.
      *
-     * @param pig         An encapsulation of the pig's ID and address
-     * @param peers       The {@link Set} of peers of the pig
-     * @param neighbors   The {@link List} of neighbors of the pig
-     * @param maxHopCount The network's maximum hop count
-     * @param hopDelay    The network's hop delay
+     * @param gameServerAddress {@link Address} of the {@link GameServer}
+     * @param pig               An encapsulation of the pig's ID and address
+     * @param peers             The {@link Set} of peers of the pig
+     * @param neighbors         The {@link List} of neighbors of the pig
+     * @param maxHopCount       The network's maximum hop count
+     * @param hopDelay          The network's hop delay
      * @throws RemoteException Thrown when a Java RMI exception occurs
      */
-    void receiveData(Pig pig, Set<Pig> peers, List<List<Occupant>> neighbors,
+    void receiveData(Address gameServerAddress, Pig pig, Set<Pig> peers, List<List<Occupant>> neighbors,
             int maxHopCount, long hopDelay) throws RemoteException;
 
     /**

@@ -1,5 +1,6 @@
 package com.smartpigs.game.client;
 
+import com.smartpigs.model.Address;
 import com.smartpigs.model.Configuration;
 import com.smartpigs.model.Pig;
 import com.smartpigs.pig.server.PigServer;
@@ -19,13 +20,15 @@ import java.rmi.RemoteException;
 public class PigDataSender {
 
     private final Configuration configuration;
+    private final Address gameServerAddress;
 
-    public PigDataSender(final Configuration configuration) {
+    public PigDataSender(final Configuration configuration, final Address gameServerAddress) {
         this.configuration = configuration;
+        this.gameServerAddress = gameServerAddress;
     }
 
     public void send() {
-        configuration.getPigSet().forEach(this::sendPigData);
+        configuration.getPigSet().forEach(this::send);
     }
 
     /**
@@ -33,11 +36,11 @@ public class PigDataSender {
      *
      * @param pig The pig to connect to
      */
-    private void sendPigData(final Pig pig) {
+    private void send(final Pig pig) {
         try {
-            PigServer.connect(pig).receiveData(pig, configuration.getFromPeerMap(pig),
-                    configuration.getFromNeighborMap(pig), configuration.getMaxHopCount(),
-                    configuration.getHopDelay());
+            PigServer.connect(pig).receiveData(gameServerAddress, pig,
+                    configuration.getFromPeerMap(pig), configuration.getFromNeighborMap(pig),
+                    configuration.getMaxHopCount(), configuration.getHopDelay());
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
