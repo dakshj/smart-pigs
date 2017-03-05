@@ -95,7 +95,7 @@ public interface PigServer extends Remote {
      *
      * @param sender The pig that initiated {@link ShelterInformer}, and who is dead or about to die
      */
-    void takeShelter(Pig sender);
+    void takeShelter(Pig sender) throws RemoteException;
 
-    void updateNeighborCell(Pig neighbor);
+    void updateNeighborCell(Pig neighbor) throws RemoteException;
 }

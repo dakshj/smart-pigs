@@ -50,10 +50,12 @@ public class BirdAttackInformer {
             e.printStackTrace();
         }
 
-        // FIXME parallelStream() is not resulting into parallelism!
-        peers.parallelStream()
+        // TODO use a working parallelStream() instead of spawning Threads
+        peers.stream()
                 .filter(peer -> !path.contains(peer))
-                .forEach(peer -> {
+
+                // Execute each birdApproaching() in parallel Threads
+                .forEach(peer -> new Thread(() -> {
                     try {
                         PigServer.connect(peer)
                                 .birdApproaching(path, attackEta - hopDelay,
@@ -61,6 +63,6 @@ public class BirdAttackInformer {
                     } catch (RemoteException | NotBoundException e) {
                         e.printStackTrace();
                     }
-                });
+                }).start());
     }
 }
