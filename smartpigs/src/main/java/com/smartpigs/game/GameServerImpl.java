@@ -56,7 +56,8 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         new PigDataSender(configuration).send();
 
         new BirdLauncher(configuration.getClosestPig(),
-                configuration.getAttackEta(), configuration.getAttackedCell())
+                configuration.getAttackEta(), configuration.getAttackedCell(),
+                configuration.getMaxHopCount())
                 .launch();
     }
 

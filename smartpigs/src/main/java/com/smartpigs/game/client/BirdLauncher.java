@@ -9,17 +9,21 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 
 public class BirdLauncher {
 
     private final Pig closestPig;
     private final long attackEta;
     private final Cell attackedCell;
+    private final int maxHopCount;
 
-    public BirdLauncher(final Pig closestPig, final long attackEta, final Cell attackedCell) {
+    public BirdLauncher(final Pig closestPig, final long attackEta, final Cell attackedCell,
+            final int maxHopCount) {
         this.closestPig = closestPig;
         this.attackEta = attackEta;
         this.attackedCell = attackedCell;
+        this.maxHopCount = maxHopCount;
     }
 
     public void launch() {
@@ -28,7 +32,7 @@ public class BirdLauncher {
                     closestPig.getAddress().getPortNo());
             PigServer pigServer = (PigServer) registry.lookup(PigServerImpl.NAME);
 
-            pigServer.birdLaunched(attackEta, attackedCell);
+            pigServer.birdApproaching(new ArrayList<>(), attackEta, attackedCell, maxHopCount);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }

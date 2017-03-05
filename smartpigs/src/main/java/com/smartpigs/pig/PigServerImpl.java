@@ -46,18 +46,12 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     }
 
     @Override
-    public void birdLaunched(final long attackEta, final Cell attackedCell) throws RemoteException {
+    public void birdApproaching(final List<Pig> path, final long attackEta,
+            final Cell attackedCell, final int currentHopCount) throws RemoteException {
         if (pig == null) {
             throw new PigNotInitializedException();
         }
 
-        new BirdAttackInformer(pig, new ArrayList<>(), peers,
-                attackEta, attackedCell, maxHopCount, hopDelay).inform();
-    }
-
-    @Override
-    public void birdApproaching(final List<Pig> path, final long attackEta,
-            final Cell attackedCell, final int currentHopCount) throws RemoteException {
         if (currentHopCount == 0 || floodedBirdApproaching) {
             return;
         }

@@ -11,8 +11,6 @@ import java.util.Set;
 public interface PigServer extends Remote {
     void receiveData(Pig pig, Set<Pig> peers, int hopCount, long hopDelay) throws RemoteException;
 
-    void birdLaunched(long attackEta, Cell attackedCell) throws RemoteException;
-
     void birdApproaching(List<Pig> path, long attackEta, Cell attackedCell, int currentHopCount)
             throws RemoteException;
 }
