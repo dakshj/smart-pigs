@@ -139,7 +139,7 @@ public class PigServerImpl extends UnicastRemoteObject
     @Override
     public void killedByFallingOver() throws RemoteException {
         getPig().setHit();
-        System.out.println("I AM DEAD!");
+        System.out.println("I AM HIT!");
     }
 
     @Override

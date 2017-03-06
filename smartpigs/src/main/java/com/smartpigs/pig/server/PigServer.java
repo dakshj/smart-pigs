@@ -63,11 +63,11 @@ public interface PigServer extends Remote {
      * If there is still time for the bird attack to happen on the pig's cell, it will find an
      * empty cell to move to so as to evade the attack.
      * <p>
-     * If there is no empty cell and the pig is going to eventually die, then the pig will
-     * mark itself as dead after that amount of time has gone by, and also fall onto
+     * If there is no empty cell and the pig is going to eventually get hit, then the pig will
+     * mark itself as hit after that amount of time has gone by, and also fall onto
      * a random neighboring cell, be it a stone or another pig.
      * <p>
-     * If the attack has already happened on the pig, it will mark itself as dead,
+     * If the attack has already happened on the pig, it will mark itself as hit,
      * then fall onto a random neighboring cell.
      * <p>
      * If the random neighboring cell that the pig falls onto is a stone, then the pig will
@@ -94,12 +94,13 @@ public interface PigServer extends Remote {
     void killedByFallingOver() throws RemoteException;
 
     /**
-     * Makes a pig take shelter away from the sender, who is a pig that is dead or about to die,
+     * Makes a pig take shelter away from the sender, who is a pig that is hit or about to get hit,
      * and thus cause collateral death to this pig.
      * <p>
      * To take shelter, a pig needs to move at least two steps away from the sender.
      *
-     * @param sender The pig that initiated {@link ShelterInformer}, and who is dead or about to die
+     * @param sender The pig that initiated {@link ShelterInformer}, and who is already hit,
+     *               or about to get hit
      * @return {@code true} if the neighbor was able to move from its position;
      * {@code false} otherwise
      */
