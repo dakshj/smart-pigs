@@ -1,0 +1,38 @@
+~~~~~~~~~~~~~[GAME SERVER LOGS]~~~~~~~~~~~~
+
+
+
+~~~~~~~~~~~~[PIG SERVER 1 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+
+
+~~~~~~~~~~~~[PIG SERVER 2 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+
+
+~~~~~~~~~~~~[PIG SERVER 3 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+
+
+~~~~~~~~~~~~[PIG SERVER 4 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+
+
+~~~~~~~~~~~~[PIG SERVER 5 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+
+
+~~~~~~~~~~~~[PIG SERVER 6 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...

@@ -19,7 +19,7 @@ public class PigKiller {
      */
     public void kill() {
         try {
-            PigServer.connect(pig).killedByFallingOver();
+            PigServer.connect(pig).killed();
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }

@@ -82,11 +82,13 @@ public class PigServerImpl extends UnicastRemoteObject
     @Override
     public void birdApproaching(final List<Pig> path, final long attackEta,
             final Cell attackedCell, final int currentHopCount) throws RemoteException {
-        // Since a pig can be contacted via multiple peers, it could already be hit
-        // when the second peer contacts this pig. So, do nothing, since you're hit.
-        if (getPig().wasHit()) {
+        // Since a pig can be contacted via multiple peers, prevent any action
+        // if another peer contacts the same pig again via a different path.
+        if (getPig().hasReceivedBirdApproachingMessage()) {
             return;
         }
+
+        getPig().setHasReceivedBirdApproachingMessage();
 
         if (attackEta > 0) {
             System.out.println("Bird approaching at Cell " + attackedCell
@@ -97,8 +99,6 @@ public class PigServerImpl extends UnicastRemoteObject
         }
 
         if (getPig().getOccupiedCell().equals(attackedCell)) {
-            new ShelterInformer(getPig(), getNeighbors(), this).inform();
-
             if (attackEta > 0) {
                 final Optional<Occupant> emptyOccupantOptional = getNeighbors().stream()
                         .flatMap(Collection::stream)
@@ -111,6 +111,8 @@ public class PigServerImpl extends UnicastRemoteObject
                     System.out.println("Found safe haven at Cell " + getPig().getOccupiedCell());
                     return;
                 } else {
+                    new ShelterInformer(getPig(), getNeighbors(), this).inform();
+
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
@@ -137,7 +139,7 @@ public class PigServerImpl extends UnicastRemoteObject
     }
 
     @Override
-    public void killedByFallingOver() throws RemoteException {
+    public void killed() throws RemoteException {
         getPig().setHit();
         System.out.println("I AM HIT!");
     }
@@ -181,7 +183,7 @@ public class PigServerImpl extends UnicastRemoteObject
 
     private void killSelfAndAnotherOccupant() {
         try {
-            killedByFallingOver();
+            killed();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -267,6 +269,11 @@ public class PigServerImpl extends UnicastRemoteObject
         for (int row = 0; row < getNeighbors().size(); row++) {
             for (int col = 0; col < getNeighbors().get(row).size(); col++) {
                 final Occupant occupant = getNeighbors().get(row).get(col);
+
+                if (occupant == null) {
+                    continue;
+                }
+
                 if (occupant.getOccupantType() == OccupantType.PIG &&
                         ((Pig) occupant).getId().equals(neighbor.getId())) {
 

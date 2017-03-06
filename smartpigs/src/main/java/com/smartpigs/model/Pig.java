@@ -7,6 +7,7 @@ public class Pig extends Occupant implements Serializable {
     private String id;
     private Address address;
     private boolean hit;
+    private boolean birdApproachingMessageReceived;
 
     public String getId() {
         return id;
@@ -22,6 +23,14 @@ public class Pig extends Occupant implements Serializable {
 
     public void setHit() {
         hit = true;
+    }
+
+    public boolean hasReceivedBirdApproachingMessage() {
+        return birdApproachingMessageReceived;
+    }
+
+    public void setHasReceivedBirdApproachingMessage() {
+        this.birdApproachingMessageReceived = true;
     }
 
     @Override

@@ -42,6 +42,7 @@ import java.util.stream.IntStream;
 public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
     static final String NAME = "Game Server";
+    private final String configFilePath;
 
     private Configuration configuration;
 
@@ -54,7 +55,8 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
      * @throws RemoteException Thrown when a Java RMI exception occurs
      */
     public GameServerImpl(final String configFilePath) throws RemoteException {
-        setConfiguration(readConfigurationFromFile(configFilePath));
+        this.configFilePath = configFilePath;
+        setConfiguration(readConfigurationFromFile(getConfigFilePath()));
 
         try {
             startServer(getConfiguration().getGameServerAddress().getPortNo());
@@ -78,6 +80,8 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
      *               this game's output)
      */
     private void play(final boolean replay) {
+        setConfiguration(readConfigurationFromFile(getConfigFilePath()));
+
         if (replay) {
             System.out.println("\n\n" +
                     "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -114,9 +118,6 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
                                 case EMPTY:
                                     System.out.println("Bird crashed on an empty Cell at "
                                             + occupant.getOccupiedCell() + ".");
-                                    break;
-
-                                case PIG:
                                     break;
 
                                 case STONE:
@@ -157,7 +158,13 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
             }
         }
 
-        System.out.println("\nFinal Score : " + hitCount + " pigs hit!");
+        System.out.print("\nFinal Score : " + hitCount);
+
+        if (hitCount == 1) {
+            System.out.println(" pig hit!");
+        } else {
+            System.out.println(" pigs hit!");
+        }
     }
 
     private void askToPlayAgain() {
@@ -171,7 +178,7 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
             play(true);
         } else {
             System.out.println("\nThank you for playing Smart Pigs!\n\nI was your host, Game Server.");
-            System.exit(0);
+            System.exit(1);
         }
     }
 
@@ -236,9 +243,6 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
                 if (occupant.getOccupantType() == OccupantType.PIG) {
                     final Occupant[][] neighbors = new Occupant[3][3];
-
-                    // Set pig at the center of the 3x3 neighbors matrix
-                    neighbors[1][1] = occupant;
 
                     // Set the other eight neighbors
                     setNeighbor(neighbors, configuration, grid, row - 1, col - 1, 0, 0);
@@ -538,7 +542,7 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
                             System.out.println("Stone falling on " + occupant
                                     + " at Cell " + occupant.getOccupiedCell() + ".");
                             try {
-                                PigServer.connect(((Pig) occupant)).killedByFallingOver();
+                                PigServer.connect(((Pig) occupant)).killed();
                             } catch (RemoteException | NotBoundException e) {
                                 e.printStackTrace();
                             }
@@ -560,6 +564,10 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
                             break;
                     }
                 });
+    }
+
+    private String getConfigFilePath() {
+        return configFilePath;
     }
 
     private Configuration getConfiguration() {

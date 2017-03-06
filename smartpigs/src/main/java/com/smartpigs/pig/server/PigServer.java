@@ -91,7 +91,7 @@ public interface PigServer extends Remote {
      *
      * @throws RemoteException Thrown when a Java RMI exception occurs
      */
-    void killedByFallingOver() throws RemoteException;
+    void killed() throws RemoteException;
 
     /**
      * Makes a pig take shelter away from the sender, who is a pig that is hit or about to get hit,
