@@ -5,8 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.smartpigs.enums.OccupantType;
-import com.smartpigs.exception.ClosestPigNullException;
-import com.smartpigs.exception.OccupantsExceedCellsException;
+import com.smartpigs.exception.InvalidConfigurationException;
 import com.smartpigs.game.client.BirdLauncher;
 import com.smartpigs.game.client.PigDataSender;
 import com.smartpigs.game.client.StatusRequester;
@@ -423,11 +422,45 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
     private void validateConfiguration(final Configuration configuration) {
         checkOccupantCapacityInGrid(configuration);
 
-        if (configuration.getClosestPig() == null) {
-            throw new ClosestPigNullException();
+        if (configuration.getMaxHopCount() <= 0) {
+            throw new InvalidConfigurationException("The max hop count is invalid!");
         }
 
-        // TODO add more Configuration validations
+        if (configuration.getAttackEta() < configuration.getHopDelay()) {
+            throw new InvalidConfigurationException("The Attack ETA is too low!\n" +
+                    "(It should be at least the same as the network's hop delay" +
+                    " to convey at least one message.)");
+        }
+
+        if (configuration.getAttackedCell() == null) {
+            throw new InvalidConfigurationException("The Attacked Cell is invalid!");
+        }
+
+        if (configuration.getAttackedCell().getRow() >= configuration.getRows() ||
+                configuration.getAttackedCell().getCol() >= configuration.getColumns()) {
+            throw new InvalidConfigurationException("The Attacked Cell is out of grid range!");
+        }
+
+        if (configuration.getGameServerAddress() == null) {
+            throw new InvalidConfigurationException("The Game Server Address is invalid!");
+        }
+
+        if (configuration.getPigSet() == null || configuration.getPigSet().isEmpty()) {
+            throw new InvalidConfigurationException("The Pig Set is invalid!");
+        }
+
+        if (configuration.getClosestPig() == null) {
+            throw new InvalidConfigurationException("The pig closest to the bird launcher is invalid!");
+        }
+
+        if (configuration.getPeerMap() == null || configuration.getPeerMap().isEmpty()) {
+            throw new InvalidConfigurationException("The Peer Map is invalid!\n"
+                    + "(Please check the \"network\" JSON array)");
+        }
+
+        if (configuration.getNeighborMap() == null || configuration.getNeighborMap().isEmpty()) {
+            throw new InvalidConfigurationException("The Neighbor Map is invalid!");
+        }
     }
 
     /**
@@ -440,7 +473,8 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         final int cellCount = configuration.getRows() * configuration.getColumns();
 
         if (occupantCount > cellCount) {
-            throw new OccupantsExceedCellsException(occupantCount, cellCount);
+            throw new InvalidConfigurationException("The number of occupants (" + occupantCount
+                    + ")" + " exceeds the number of cells (" + cellCount + ").");
         }
     }
 

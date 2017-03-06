@@ -94,6 +94,10 @@ public class Configuration {
         this.closestPig = closestPig;
     }
 
+    public Map<Pig, Set<Pig>> getPeerMap() {
+        return peerMap;
+    }
+
     public Set<Pig> getFromPeerMap(final Pig pig) {
         if (peerMap == null) {
             return null;
@@ -108,6 +112,10 @@ public class Configuration {
         }
 
         peerMap.put(pig, peers);
+    }
+
+    public Map<Pig, List<List<Occupant>>> getNeighborMap() {
+        return neighborMap;
     }
 
     public List<List<Occupant>> getFromNeighborMap(final Pig pig) {

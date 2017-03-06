@@ -8,8 +8,6 @@ import java.rmi.RemoteException;
 
 public class Main {
 
-    // TODO If a pig moves to a safe location, then update to GameServer so that GameServer will print the grid again
-
     /**
      * @param args <p>
      *             args[0]:
