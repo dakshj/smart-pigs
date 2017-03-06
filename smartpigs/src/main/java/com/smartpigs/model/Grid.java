@@ -16,10 +16,41 @@ public class Grid {
 
     @Override
     public String toString() {
-        // TODO print grid in a prettier manner
+        final StringBuilder full = new StringBuilder();
 
-        return "Grid{" +
-                "occupants=" + occupants +
-                '}';
+        for (int row = 0; row < occupants.size(); row++) {
+            final List<Occupant> rowList = occupants.get(row);
+            final StringBuilder line = new StringBuilder();
+
+            for (int col = 0; col < rowList.size(); col++) {
+                final Occupant occupant = rowList.get(col);
+
+                switch (occupant.getOccupantType()) {
+                    case EMPTY:
+                        line.append('E');
+                        break;
+
+                    case PIG:
+                        line.append("P").append(((Pig) occupant).getId());
+                        break;
+
+                    case STONE:
+                        line.append('S');
+                        break;
+                }
+
+                if (col < rowList.size() - 1) {
+                    line.append('\t');
+                }
+            }
+
+            full.append(line);
+
+            if (row < occupants.size() - 1) {
+                full.append('\n');
+            }
+        }
+
+        return full.toString();
     }
 }

@@ -148,7 +148,7 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
      */
     private void buildNeighborMap(final Grid grid, final Configuration configuration) {
         for (int row = 0; row < grid.getOccupants().size(); row++) {
-            for (int col = 0; col < grid.getOccupants().size(); col++) {
+            for (int col = 0; col < grid.getOccupants().get(row).size(); col++) {
                 final Occupant occupant = grid.getOccupants().get(row).get(col);
 
                 if (occupant.getOccupantType() == OccupantType.PIG) {
