@@ -62,7 +62,15 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
                     + " failed to start!");
         }
 
+        System.out.println("Welcome to Smart Pigs!\n\nI am your Game Server.\n");
+        System.out.println("Grid :\n" + getConfiguration().getGrid() + "\n");
+
+        System.out.println("Sending data to all pigs...");
         new PigDataSender(configuration, configuration.getGameServerAddress()).send();
+        System.out.println("Data sent.\n");
+
+        System.out.print("Launching a bird on Cell " + getConfiguration().getAttackedCell() + ".");
+        System.out.println(" ETA : " + getConfiguration().getAttackEta() + " ms.");
 
         // If the attackedCell is a stone, then call stoneDestroyed() after waiting for attackEta
         // Else call birdLaunched() on the closest pig
@@ -72,24 +80,44 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
                         occupant.getOccupiedCell().equals(getConfiguration().getAttackedCell()))
                 .findFirst()
                 .ifPresent(occupant -> {
-                    if (occupant.getOccupantType() == OccupantType.STONE) {
-                        new Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                try {
-                                    stoneDestroyed(occupant);
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
+                    new BirdLauncher(configuration.getClosestPig(),
+                            configuration.getAttackEta(), configuration.getAttackedCell(),
+                            configuration.getMaxHopCount())
+                            .launch();
+
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            switch (occupant.getOccupantType()) {
+                                case EMPTY:
+                                    System.out.println("Bird crashed on an empty Cell at "
+                                            + occupant.getOccupiedCell() + ".");
+                                    break;
+
+                                case PIG:
+                                    break;
+
+                                case STONE:
+                                    try {
+                                        stoneDestroyed(occupant);
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
                             }
-                        }, getConfiguration().getAttackEta());
-                    } else {
-                        new BirdLauncher(configuration.getClosestPig(),
-                                configuration.getAttackEta(), configuration.getAttackedCell(),
-                                configuration.getMaxHopCount())
-                                .launch();
-                    }
+
+                            gameOver();
+                        }
+                    }, getConfiguration().getAttackEta());
                 });
+    }
+
+    private void gameOver() {
+        System.out.println("\n\nGame Over!");
+        // TODO Send statusAll to all pigs
+        // TODO Print each wasAlive
+        // TODO Calculate score when all pigs have replied
+        // TODO Give option to rerun the game
     }
 
     /**
@@ -399,6 +427,8 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
             return;
         }
 
+        System.out.println("Stone at Cell " + stoneOccupant.getOccupiedCell() + " was destroyed.");
+
         getConfiguration().getGrid().getOccupants().stream()
                 .flatMap(Collection::stream)
                 .filter(occupant -> occupant.getOccupiedCell().equals(stoneFallingCell))
@@ -406,19 +436,28 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
                 .ifPresent(occupant -> {
                     switch (occupant.getOccupantType()) {
                         case PIG:
+                            System.out.println("Stone falling on " + occupant
+                                    + " at Cell " + occupant.getOccupiedCell() + ".");
                             try {
-                                PigServer.connect(((Pig) occupant)).killByFallingOver();
+                                PigServer.connect(((Pig) occupant)).killedByFallingOver();
                             } catch (RemoteException | NotBoundException e) {
                                 e.printStackTrace();
                             }
                             break;
 
                         case STONE:
+                            System.out.println("Stone falling on another stone at Cell "
+                                    + occupant.getOccupiedCell() + ".");
                             try {
                                 stoneDestroyed(occupant);
                             } catch (RemoteException e) {
                                 e.printStackTrace();
                             }
+                            break;
+
+                        case EMPTY:
+                            System.out.println("Stone falling on an empty Cell at "
+                                    + occupant.getOccupiedCell() + ".");
                             break;
                     }
                 });

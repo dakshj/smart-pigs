@@ -27,9 +27,14 @@ public class Occupant implements Serializable {
 
     @Override
     public String toString() {
-        return "Occupant{" +
-                "occupiedCell=" + occupiedCell +
-                ", occupantType=" + occupantType +
-                '}';
+        switch (occupantType) {
+            case EMPTY:
+                return "E";
+
+            case STONE:
+                return "S";
+        }
+
+        return null;
     }
 }

@@ -42,6 +42,8 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
         } catch (RemoteException ignored) {
             System.out.println(NAME + "@" + portNo + " failed to start!");
         }
+
+        System.out.println("Pig Server created.\nWaiting for data...");
     }
 
     private void startServer(final int portNo) throws RemoteException {
@@ -60,6 +62,12 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
         setNeighbors(neighbors);
         setMaxHopCount(maxHopCount);
         setHopDelay(hopDelay);
+
+        System.out.println("Received data.");
+        System.out.println("\tPig ID : " + getPig().getId());
+        System.out.println("\tCell : " + getPig().getOccupiedCell());
+        System.out.println("\tPeers : " + getPeers());
+        System.out.println("\tNeighbors : " + getNeighbors());
     }
 
     private void resetLocalData() {
@@ -69,6 +77,14 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     @Override
     public void birdApproaching(final List<Pig> path, final long attackEta,
             final Cell attackedCell, final int currentHopCount) throws RemoteException {
+        if (attackEta > 0) {
+            System.out.println("Bird approaching at Cell " + attackedCell
+                    + ". ETA : " + attackEta + " ms.");
+        } else {
+            System.out.println("Bird crashed at Cell " + attackedCell + " "
+                    + Math.abs(attackEta) + " ms ago.");
+        }
+
         if (getPig().getOccupiedCell().equals(attackedCell)) {
             new ShelterInformer(getPig(), getNeighbors()).inform();
 
@@ -80,6 +96,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
                 if (emptyOccupantOptional.isPresent()) {
                     getPig().setOccupiedCell(emptyOccupantOptional.get().getOccupiedCell());
+                    System.out.println("Found safe haven at Cell " + getPig().getOccupiedCell());
                     return;
                 } else {
                     new Timer().schedule(new TimerTask() {
@@ -103,17 +120,20 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
         setFloodedBirdApproaching(true);
 
-        new BirdAttackInformer(getPig(), new ArrayList<>(path), peers, attackEta, attackedCell,
+        new BirdAttackInformer(getPig(), new ArrayList<>(path), getPeers(), attackEta, attackedCell,
                 currentHopCount, getHopDelay()).inform();
     }
 
     @Override
-    public void killByFallingOver() throws RemoteException {
-        getPig().kill();
+    public void killedByFallingOver() throws RemoteException {
+        getPig().setDead();
+        System.out.println("I AM DEAD!");
     }
 
     @Override
     public void takeShelter(final Pig sender) {
+        System.out.println(sender + " asked to take shelter!");
+
         getNeighbors().stream()
                 .flatMap(Collection::stream)
 
@@ -129,12 +149,23 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
                 // Select the first such empty cell
                 .findFirst()
                 .ifPresent(occupant -> {
-                            // Move to that empty cell
+                            // Update neighbors list so as to set pig's cell to empty
+                            final Occupant emptyOccupant = new Occupant();
+                            emptyOccupant.setOccupiedCell(getPig().getOccupiedCell());
+                            emptyOccupant.setOccupantType(OccupantType.EMPTY);
+                            getNeighbors().get(occupant.getOccupiedCell().getRow())
+                                    .set(occupant.getOccupiedCell().getCol(), emptyOccupant);
+
+                            // Move pig to the found empty cell
                             getPig().setOccupiedCell(occupant.getOccupiedCell());
 
-                            // Since this pig has moved to another cell,
-                            // its neighbors list is useless now
-                            setNeighbors(null);
+                            // Update neighbors list to reflect pig's movement to a new empty cell
+                            getNeighbors().get(getPig().getOccupiedCell().getRow())
+                                    .set(getPig().getOccupiedCell().getCol(), getPig());
+
+                            System.out.println("Moved to Cell "
+                                    + getPig().getOccupiedCell()
+                                    + " to increase chances of survival!");
 
                             // Inform sender that this pig has moved
                             new NeighborCellUpdater(getPig(), sender).update();
@@ -145,7 +176,7 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     @Override
     public void updateNeighborCell(final Pig neighbor) {
         for (int row = 0; row < getNeighbors().size(); row++) {
-            for (int col = 0; col < getNeighbors().size(); col++) {
+            for (int col = 0; col < getNeighbors().get(row).size(); col++) {
                 final Occupant occupant = getNeighbors().get(row).get(col);
                 if (occupant.getOccupantType() == OccupantType.PIG &&
                         ((Pig) occupant).getId().equals(neighbor.getId())) {
@@ -165,7 +196,11 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     }
 
     private void killSelfAndAnotherOccupant() {
-        getPig().kill();
+        try {
+            killedByFallingOver();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
         final int row = ThreadLocalRandom.current().nextInt(0, 3);
         final int col = ThreadLocalRandom.current().nextInt(0, 3);
@@ -176,6 +211,8 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
             killSelfAndAnotherOccupant();
             return;
         }
+
+        System.out.println("Falling on Cell " + occupant.getOccupiedCell());
 
         switch (occupant.getOccupantType()) {
             case PIG:
@@ -214,6 +251,10 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     private void setHopDelay(final long hopDelay) {
         this.hopDelay = hopDelay;
+    }
+
+    private Set<Pig> getPeers() {
+        return peers;
     }
 
     private void setPeers(final Set<Pig> peers) {

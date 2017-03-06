@@ -29,16 +29,14 @@ public class ShelterInformer {
         neighbors.stream()
                 .flatMap(Collection::stream)
                 .filter(occupant -> occupant.getOccupantType() == OccupantType.PIG)
-                .forEach(occupant -> inform((Pig) occupant));
+                .forEach(occupant -> new Thread(() -> inform((Pig) occupant)).start());
     }
 
-    private boolean inform(final Pig pig) {
+    private void inform(final Pig pig) {
         try {
             PigServer.connect(pig).takeShelter(sender);
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
-
-        return false;
     }
 }

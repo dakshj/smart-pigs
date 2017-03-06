@@ -31,7 +31,7 @@ public class Grid {
                         break;
 
                     case PIG:
-                        line.append("P").append(((Pig) occupant).getId());
+                        line.append(occupant);
                         break;
 
                     case STONE:

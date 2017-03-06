@@ -39,6 +39,6 @@ public class Cell implements Serializable {
 
     @Override
     public String toString() {
-        return row + "," + col;
+        return "{" + row + ", " + col + "}";
     }
 }

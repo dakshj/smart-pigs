@@ -20,7 +20,7 @@ public class Pig extends Occupant implements Serializable {
         return alive;
     }
 
-    public void kill() {
+    public void setDead() {
         alive = false;
     }
 
@@ -44,10 +44,6 @@ public class Pig extends Occupant implements Serializable {
 
     @Override
     public String toString() {
-        return "Pig{" +
-                "id='" + id + '\'' +
-                ", address=" + address +
-                ", alive=" + alive +
-                "} " + super.toString();
+        return "P" + id;
     }
 }
