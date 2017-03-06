@@ -64,6 +64,10 @@ public class PigServerImpl extends UnicastRemoteObject
         setMaxHopCount(maxHopCount);
         setHopDelay(hopDelay);
 
+        System.out.println("\n\n" +
+                "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+                + "\n\n");
+
         System.out.println("Received data.");
         System.out.println("\tPig ID : " + getPig().getId());
         System.out.println("\tCell : " + getPig().getOccupiedCell());
@@ -78,9 +82,9 @@ public class PigServerImpl extends UnicastRemoteObject
     @Override
     public void birdApproaching(final List<Pig> path, final long attackEta,
             final Cell attackedCell, final int currentHopCount) throws RemoteException {
-        // Since a pig can be contacted via multiple peers, it could already be dead
-        // when the second peer contacts this pig. So, do nothing, since you're dead.
-        if (!getPig().isAlive()) {
+        // Since a pig can be contacted via multiple peers, it could already be hit
+        // when the second peer contacts this pig. So, do nothing, since you're hit.
+        if (getPig().wasHit()) {
             return;
         }
 
@@ -134,7 +138,7 @@ public class PigServerImpl extends UnicastRemoteObject
 
     @Override
     public void killedByFallingOver() throws RemoteException {
-        getPig().setDead();
+        getPig().setHit();
         System.out.println("I AM DEAD!");
     }
 
@@ -165,7 +169,14 @@ public class PigServerImpl extends UnicastRemoteObject
             return true;
         }
 
+        System.out.println("No shelter found! (Needed to find an empty cell at least two steps away.)");
+
         return false;
+    }
+
+    @Override
+    public boolean wasHit() {
+        return getPig().wasHit();
     }
 
     private void killSelfAndAnotherOccupant() {

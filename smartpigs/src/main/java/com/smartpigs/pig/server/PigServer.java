@@ -104,4 +104,12 @@ public interface PigServer extends Remote {
      * {@code false} otherwise
      */
     boolean takeShelter(final Pig sender) throws RemoteException;
+
+    /**
+     * Gets whether the pig was hit or not.
+     *
+     * @return {@code true} if the pig was hit (and is now dead);
+     * {@code false} otherwise
+     */
+    boolean wasHit() throws RemoteException;
 }

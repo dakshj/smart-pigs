@@ -44,7 +44,6 @@ public class BirdAttackInformer {
     public void inform() {
         path.add(sender);
 
-        // TODO use a working parallelStream() instead of spawning Threads
         peers.stream()
                 .filter(peer -> !path.contains(peer))
 

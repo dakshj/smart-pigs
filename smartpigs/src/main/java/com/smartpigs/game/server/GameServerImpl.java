@@ -9,6 +9,7 @@ import com.smartpigs.exception.ClosestPigNullException;
 import com.smartpigs.exception.OccupantsExceedCellsException;
 import com.smartpigs.game.client.BirdLauncher;
 import com.smartpigs.game.client.PigDataSender;
+import com.smartpigs.game.client.StatusRequester;
 import com.smartpigs.model.Address;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Configuration;
@@ -29,6 +30,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -62,7 +65,17 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
                     + " failed to start!");
         }
 
-        System.out.println("Welcome to Smart Pigs!\n\nI am your Game Server.\n");
+        play(false);
+    }
+
+    private void play(final boolean replay) {
+        if (replay) {
+            System.out.println("\n\n" +
+                    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+                    + "\n\n");
+        }
+
+        System.out.println("Welcome to Smart Pigs!\n\nI am your host, Game Server.\n");
         System.out.println("Grid :\n" + getConfiguration().getGrid() + "\n");
 
         System.out.println("Sending data to all pigs...");
@@ -113,11 +126,44 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
     }
 
     private void gameOver() {
-        System.out.println("\n\nGame Over!");
-        // TODO Send statusAll to all pigs
-        // TODO Print each wasAlive
-        // TODO Calculate score when all pigs have replied
-        // TODO Give option to rerun the game
+        System.out.println("\nGame Over!");
+
+        score(new StatusRequester(configuration.getPigSet()).request());
+
+        askToPlayAgain();
+    }
+
+    /**
+     * @param hitMap {@link Map} of Pig IDs vs. their hit status
+     */
+    private void score(final Map<String, Boolean> hitMap) {
+        int hitCount = 0;
+
+        for (final Map.Entry<String, Boolean> entry : hitMap.entrySet()) {
+            if (entry.getValue()) {
+                System.out.println("Pig " + entry.getKey() + " was hit!");
+                hitCount++;
+            } else {
+                System.out.println("Pig " + entry.getKey() + " was not hit!");
+            }
+        }
+
+        System.out.println("\nFinal Score : " + hitCount + " pigs hit!");
+    }
+
+    private void askToPlayAgain() {
+        System.out.println("\nPlay Again? (y/n)");
+        final String input = new Scanner(System.in).next();
+
+        boolean playAgain = input.equalsIgnoreCase("y")
+                || input.equalsIgnoreCase("yes");
+
+        if (playAgain) {
+            play(true);
+        } else {
+            System.out.println("\nThank you for playing Smart Pigs!\n\nI was your host, Game Server.");
+            System.exit(0);
+        }
     }
 
     /**
