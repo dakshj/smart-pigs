@@ -9,15 +9,19 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class ShelterInformer {
 
     private final Pig sender;
     private final List<List<Occupant>> neighbors;
+    private final NeighborMovedListener listener;
 
-    public ShelterInformer(final Pig sender, final List<List<Occupant>> neighbors) {
+    public ShelterInformer(final Pig sender, final List<List<Occupant>> neighbors,
+            final NeighborMovedListener listener) {
         this.sender = sender;
         this.neighbors = neighbors;
+        this.listener = listener;
     }
 
     /**
@@ -28,15 +32,22 @@ public class ShelterInformer {
     public void inform() {
         neighbors.stream()
                 .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
                 .filter(occupant -> occupant.getOccupantType() == OccupantType.PIG)
-                .forEach(occupant -> new Thread(() -> inform((Pig) occupant)).start());
+                .forEach(occupant -> inform((Pig) occupant));
     }
 
     private void inform(final Pig pig) {
         try {
-            PigServer.connect(pig).takeShelter(sender);
+            if (PigServer.connect(pig).takeShelter(sender)) {
+                listener.moved(pig);
+            }
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public interface NeighborMovedListener {
+        void moved(final Pig neighbor);
     }
 }

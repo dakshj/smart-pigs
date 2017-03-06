@@ -282,8 +282,14 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
             occupant.setOccupiedCell(new Cell(row, col));
             occupant.setOccupantType(occupantType);
-
             occupants[row][col] = occupant;
+
+            // TODO Remove hard-coding of P1 at {3,4}
+            if (occupant.getOccupantType() == OccupantType.PIG && ((Pig) occupant).getId().equals("1")) {
+                occupants[row][col] = null;
+                occupant.setOccupiedCell(new Cell(3, 4));
+                occupants[3][4] = occupant;
+            }
         }
     }
 

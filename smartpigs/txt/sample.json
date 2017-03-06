@@ -1,6 +1,6 @@
 {
   "noOfPigs": 6,
-  "noOfStones": 10,
+  "noOfStones": 15,
   "rows": 5,
   "columns": 5,
   "maxHopCount": 4,

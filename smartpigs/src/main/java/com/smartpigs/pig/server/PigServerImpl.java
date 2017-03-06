@@ -7,7 +7,6 @@ import com.smartpigs.model.Occupant;
 import com.smartpigs.model.Pig;
 import com.smartpigs.pig.client.BirdAttackInformer;
 import com.smartpigs.pig.client.FallingOnStoneInformer;
-import com.smartpigs.pig.client.NeighborCellUpdater;
 import com.smartpigs.pig.client.PigKiller;
 import com.smartpigs.pig.client.ShelterInformer;
 
@@ -18,13 +17,15 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class PigServerImpl extends UnicastRemoteObject implements PigServer {
+public class PigServerImpl extends UnicastRemoteObject
+        implements PigServer, ShelterInformer.NeighborMovedListener {
 
     static final String NAME = "Pig Server";
 
@@ -77,6 +78,12 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     @Override
     public void birdApproaching(final List<Pig> path, final long attackEta,
             final Cell attackedCell, final int currentHopCount) throws RemoteException {
+        // Since a pig can be contacted via multiple peers, it could already be dead
+        // when the second peer contacts this pig. So, do nothing, since you're dead.
+        if (!getPig().isAlive()) {
+            return;
+        }
+
         if (attackEta > 0) {
             System.out.println("Bird approaching at Cell " + attackedCell
                     + ". ETA : " + attackEta + " ms.");
@@ -86,11 +93,12 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
         }
 
         if (getPig().getOccupiedCell().equals(attackedCell)) {
-            new ShelterInformer(getPig(), getNeighbors()).inform();
+            new ShelterInformer(getPig(), getNeighbors(), this).inform();
 
             if (attackEta > 0) {
                 final Optional<Occupant> emptyOccupantOptional = getNeighbors().stream()
                         .flatMap(Collection::stream)
+                        .filter(Objects::nonNull)
                         .filter(occupant -> occupant.getOccupantType() == OccupantType.EMPTY)
                         .findFirst();
 
@@ -131,11 +139,12 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
     }
 
     @Override
-    public void takeShelter(final Pig sender) {
+    public boolean takeShelter(final Pig sender) {
         System.out.println(sender + " asked to take shelter!");
 
-        getNeighbors().stream()
+        final Optional<Occupant> optional = getNeighbors().stream()
                 .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
 
                 // Filter only empty cells
                 .filter(occupant -> occupant.getOccupantType() == OccupantType.EMPTY)
@@ -147,52 +156,35 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
                 ) >= 2)
 
                 // Select the first such empty cell
-                .findFirst()
-                .ifPresent(occupant -> {
-                            // Update neighbors list so as to set pig's cell to empty
-                            final Occupant emptyOccupant = new Occupant();
-                            emptyOccupant.setOccupiedCell(getPig().getOccupiedCell());
-                            emptyOccupant.setOccupantType(OccupantType.EMPTY);
-                            getNeighbors().get(occupant.getOccupiedCell().getRow())
-                                    .set(occupant.getOccupiedCell().getCol(), emptyOccupant);
+                .findFirst();
 
-                            // Move pig to the found empty cell
-                            getPig().setOccupiedCell(occupant.getOccupiedCell());
+        if (optional.isPresent()) {
+            final Occupant occupant = optional.get();
+            // Update neighbors list so as to set pig's cell to empty
+            final Occupant emptyOccupant = new Occupant();
+            emptyOccupant.setOccupiedCell(getPig().getOccupiedCell());
+            emptyOccupant.setOccupantType(OccupantType.EMPTY);
 
-                            // Update neighbors list to reflect pig's movement to a new empty cell
-                            getNeighbors().get(getPig().getOccupiedCell().getRow())
-                                    .set(getPig().getOccupiedCell().getCol(), getPig());
+            // Set {1,1} as empty because a pig is in the center of its neighbor list,
+            // thus moving from there will make {1,1} empty
+            getNeighbors().get(1).set(1, emptyOccupant);
 
-                            System.out.println("Moved to Cell "
-                                    + getPig().getOccupiedCell()
-                                    + " to increase chances of survival!");
+            // Move pig to the found empty cell
+            getPig().setOccupiedCell(occupant.getOccupiedCell());
 
-                            // Inform sender that this pig has moved
-                            new NeighborCellUpdater(getPig(), sender).update();
-                        }
-                );
-    }
+            // FIXME this is wrong because getNeighbors() is 3x3 and currently it is referencing through larger grid's row,col
+            // Update neighbors list to reflect pig's movement to a new empty cell
+            getNeighbors().get(getPig().getOccupiedCell().getRow())
+                    .set(getPig().getOccupiedCell().getCol(), getPig());
 
-    @Override
-    public void updateNeighborCell(final Pig neighbor) {
-        for (int row = 0; row < getNeighbors().size(); row++) {
-            for (int col = 0; col < getNeighbors().get(row).size(); col++) {
-                final Occupant occupant = getNeighbors().get(row).get(col);
-                if (occupant.getOccupantType() == OccupantType.PIG &&
-                        ((Pig) occupant).getId().equals(neighbor.getId())) {
+            System.out.println("Moved to Cell "
+                    + getPig().getOccupiedCell()
+                    + " to increase chances of survival!");
 
-                    // Set old cell of neighbor as empty
-                    final Occupant emptyOccupant = new Occupant();
-                    emptyOccupant.setOccupantType(OccupantType.EMPTY);
-                    emptyOccupant.setOccupiedCell(new Cell(row, col));
-                    getNeighbors().get(row).set(col, emptyOccupant);
-
-                    // Set new cell of neighbor, as neighbor
-                    getNeighbors().get(neighbor.getOccupiedCell().getRow())
-                            .set(neighbor.getOccupiedCell().getCol(), neighbor);
-                }
-            }
+            return true;
         }
+
+        return false;
     }
 
     private void killSelfAndAnotherOccupant() {
@@ -275,5 +267,28 @@ public class PigServerImpl extends UnicastRemoteObject implements PigServer {
 
     private void setFloodedBirdApproaching(final boolean floodedBirdApproaching) {
         this.floodedBirdApproaching = floodedBirdApproaching;
+    }
+
+    @Override
+    public void moved(final Pig neighbor) {
+        for (int row = 0; row < getNeighbors().size(); row++) {
+            for (int col = 0; col < getNeighbors().get(row).size(); col++) {
+                final Occupant occupant = getNeighbors().get(row).get(col);
+                if (occupant.getOccupantType() == OccupantType.PIG &&
+                        ((Pig) occupant).getId().equals(neighbor.getId())) {
+
+                    // Set old cell of neighbor as empty
+                    final Occupant emptyOccupant = new Occupant();
+                    emptyOccupant.setOccupantType(OccupantType.EMPTY);
+                    emptyOccupant.setOccupiedCell(new Cell(row, col));
+                    getNeighbors().get(row).set(col, emptyOccupant);
+
+                    // FIXME this is wrong because getNeighbors() is 3x3 and currently it is referencing through larger grid's row,col
+                    // Set new cell of neighbor, as neighbor
+                    getNeighbors().get(neighbor.getOccupiedCell().getRow())
+                            .set(neighbor.getOccupiedCell().getCol(), neighbor);
+                }
+            }
+        }
     }
 }

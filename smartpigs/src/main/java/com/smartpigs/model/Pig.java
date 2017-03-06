@@ -16,7 +16,7 @@ public class Pig extends Occupant implements Serializable {
         return address;
     }
 
-    private boolean isAlive() {
+    public boolean isAlive() {
         return alive;
     }
 

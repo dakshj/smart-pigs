@@ -25,6 +25,8 @@ public class Grid {
             for (int col = 0; col < rowList.size(); col++) {
                 final Occupant occupant = rowList.get(col);
 
+                line.append(occupant.getOccupiedCell()).append(' ');
+
                 switch (occupant.getOccupantType()) {
                     case EMPTY:
                         line.append('E');

@@ -34,5 +34,5 @@ public interface GameServer extends Remote {
      * @param stoneOccupant The stone that needs to fall on another cell
      * @throws RemoteException Thrown when a Java RMI exception occurs
      */
-    void stoneDestroyed(Occupant stoneOccupant) throws RemoteException;
+    void stoneDestroyed(final Occupant stoneOccupant) throws RemoteException;
 }

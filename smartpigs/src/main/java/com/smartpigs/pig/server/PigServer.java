@@ -47,8 +47,9 @@ public interface PigServer extends Remote {
      * @param hopDelay          The network's hop delay
      * @throws RemoteException Thrown when a Java RMI exception occurs
      */
-    void receiveData(Address gameServerAddress, Pig pig, Set<Pig> peers, List<List<Occupant>> neighbors,
-            int maxHopCount, long hopDelay) throws RemoteException;
+    void receiveData(final Address gameServerAddress, final Pig pig, final Set<Pig> peers,
+            final List<List<Occupant>> neighbors, final int maxHopCount,
+            final long hopDelay) throws RemoteException;
 
     /**
      * Informs the current {@link PigServer} instance about an incoming bird attack.
@@ -82,8 +83,8 @@ public interface PigServer extends Remote {
      * @param currentHopCount The remaining number of hops the message can be flooded
      * @throws RemoteException Thrown when a Java RMI exception occurs
      */
-    void birdApproaching(List<Pig> path, long attackEta, Cell attackedCell, int currentHopCount)
-            throws RemoteException;
+    void birdApproaching(final List<Pig> path, final long attackEta, final Cell attackedCell,
+            final int currentHopCount) throws RemoteException;
 
     /**
      * Kills the pig because of collateral death.
@@ -99,18 +100,8 @@ public interface PigServer extends Remote {
      * To take shelter, a pig needs to move at least two steps away from the sender.
      *
      * @param sender The pig that initiated {@link ShelterInformer}, and who is dead or about to die
+     * @return {@code true} if the neighbor was able to move from its position;
+     * {@code false} otherwise
      */
-    void takeShelter(Pig sender) throws RemoteException;
-
-    /**
-     * Updates the {@link Cell} of a neighbor when that neighbor moves itself.
-     * <p>
-     * Useful since after a pig dies and randomly selects the cell which was the original cell of
-     * the neighbor, it should have updated data that this cell is actually empty and does not
-     * contain the neighbor.
-     *
-     * @param neighbor The neighbor which was moved to another cell
-     * @throws RemoteException Thrown when a Java RMI exception occurs
-     */
-    void updateNeighborCell(Pig neighbor) throws RemoteException;
+    boolean takeShelter(final Pig sender) throws RemoteException;
 }
