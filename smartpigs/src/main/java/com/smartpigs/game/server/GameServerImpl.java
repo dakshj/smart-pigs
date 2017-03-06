@@ -68,6 +68,17 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         play(false);
     }
 
+    /**
+     * Plays the game after starting the Game Server and reading the Configuration from
+     * the configuration file.
+     * <p>
+     * Additionally, replays the game if the user chooses to do so.
+     *
+     * @param replay Flag to check if the call to this method is a first-time play or a replay
+     *               <p>
+     *               (Used for printing a divider between the previous game's output and
+     *               this game's output)
+     */
     private void play(final boolean replay) {
         if (replay) {
             System.out.println("\n\n" +
