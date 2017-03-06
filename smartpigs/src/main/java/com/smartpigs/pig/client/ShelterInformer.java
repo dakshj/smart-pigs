@@ -48,6 +48,13 @@ public class ShelterInformer {
     }
 
     public interface NeighborMovedListener {
+
+        /**
+         * Provides a callback to a pig stating that the corresponding neighbor was able to move
+         * two steps away from it since a bird is going to crash onto this pig.
+         *
+         * @param neighbor The neighbor which moved two steps away
+         */
         void moved(final Pig neighbor);
     }
 }

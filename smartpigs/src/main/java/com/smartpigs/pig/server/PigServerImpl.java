@@ -159,27 +159,8 @@ public class PigServerImpl extends UnicastRemoteObject
                 .findFirst();
 
         if (optional.isPresent()) {
-            final Occupant occupant = optional.get();
-            // Update neighbors list so as to set pig's cell to empty
-            final Occupant emptyOccupant = new Occupant();
-            emptyOccupant.setOccupiedCell(getPig().getOccupiedCell());
-            emptyOccupant.setOccupantType(OccupantType.EMPTY);
-
-            // Set {1,1} as empty because a pig is in the center of its neighbor list,
-            // thus moving from there will make {1,1} empty
-            getNeighbors().get(1).set(1, emptyOccupant);
-
             // Move pig to the found empty cell
-            getPig().setOccupiedCell(occupant.getOccupiedCell());
-
-            // FIXME this is wrong because getNeighbors() is 3x3 and currently it is referencing through larger grid's row,col
-            // Update neighbors list to reflect pig's movement to a new empty cell
-            getNeighbors().get(getPig().getOccupiedCell().getRow())
-                    .set(getPig().getOccupiedCell().getCol(), getPig());
-
-            System.out.println("Moved to Cell "
-                    + getPig().getOccupiedCell()
-                    + " to increase chances of survival!");
+            getPig().setOccupiedCell(optional.get().getOccupiedCell());
 
             return true;
         }
@@ -282,11 +263,6 @@ public class PigServerImpl extends UnicastRemoteObject
                     emptyOccupant.setOccupantType(OccupantType.EMPTY);
                     emptyOccupant.setOccupiedCell(new Cell(row, col));
                     getNeighbors().get(row).set(col, emptyOccupant);
-
-                    // FIXME this is wrong because getNeighbors() is 3x3 and currently it is referencing through larger grid's row,col
-                    // Set new cell of neighbor, as neighbor
-                    getNeighbors().get(neighbor.getOccupiedCell().getRow())
-                            .set(neighbor.getOccupiedCell().getCol(), neighbor);
                 }
             }
         }

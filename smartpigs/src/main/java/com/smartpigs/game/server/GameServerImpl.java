@@ -408,6 +408,13 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
     @Override
     public void stoneDestroyed(final Occupant stoneOccupant) throws RemoteException {
+        // TODO Suppose a pig has an imminent bird attack, and says takeShelter to a neighbor,
+        // and then the neighbor was able to move, and called the move() listener on to a pig,
+        // (write more)
+
+        // TODO Basically get all updated positions of all pigs before finding a position
+        // for this stone to topple onto
+
         // Since stoneOccupant has fallen, we can set it as an EMPTY Occupant
         // in the configuration's grid
         getConfiguration().getGrid().getOccupants().stream()
