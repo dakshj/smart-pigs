@@ -1,5 +1,7 @@
 package com.smartpigs.model;
 
+import com.smartpigs.enums.OccupantType;
+
 import java.util.List;
 
 public class Grid {
@@ -12,6 +14,28 @@ public class Grid {
 
     public List<List<Occupant>> getOccupants() {
         return occupants;
+    }
+
+    public Occupant getOccupant(final Cell cell) {
+        return occupants.get(cell.getRow()).get(cell.getCol());
+    }
+
+    public void setOccupant(final Occupant occupant) {
+        occupants.get(occupant.getOccupiedCell().getRow())
+                .set(occupant.getOccupiedCell().getCol(), occupant);
+    }
+
+    /**
+     * Sets the Occupant located by {@code occupiedCell} as an Occupant
+     * of type {@link OccupantType#EMPTY}.
+     *
+     * @param occupiedCell The location within the grid to set as an empty occupant
+     */
+    public void setOccupantAsEmpty(final Cell occupiedCell) {
+        final Occupant emptyOccupant = new Occupant();
+        emptyOccupant.setOccupantType(OccupantType.EMPTY);
+        emptyOccupant.setOccupiedCell(occupiedCell);
+        setOccupant(emptyOccupant);
     }
 
     @Override

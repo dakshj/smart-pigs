@@ -217,7 +217,8 @@ public class PigServerImpl extends UnicastRemoteObject
         this.gameServerAddress = gameServerAddress;
     }
 
-    private Pig getPig() {
+    @Override
+    public Pig getPig() {
         return pig;
     }
 

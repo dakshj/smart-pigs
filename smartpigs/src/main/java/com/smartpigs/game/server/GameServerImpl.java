@@ -8,6 +8,7 @@ import com.smartpigs.enums.OccupantType;
 import com.smartpigs.exception.InvalidConfigurationException;
 import com.smartpigs.game.client.BirdLauncher;
 import com.smartpigs.game.client.PigDataSender;
+import com.smartpigs.game.client.PigLocationsUpdater;
 import com.smartpigs.game.client.StatusRequester;
 import com.smartpigs.model.Address;
 import com.smartpigs.model.Cell;
@@ -39,8 +40,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class GameServerImpl extends UnicastRemoteObject implements GameServer {
-
-    // TODO Maintain if a stone has been destroyed already or not, to prevent a random chain of one stone falling on another, and the other falling on the same initial stone, and so on...
 
     static final String NAME = "Game Server";
 
@@ -233,10 +232,15 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
     private void buildNeighborMap(final Grid grid, final Configuration configuration) {
         for (int row = 0; row < grid.getOccupants().size(); row++) {
             for (int col = 0; col < grid.getOccupants().get(row).size(); col++) {
-                final Occupant occupant = grid.getOccupants().get(row).get(col);
+                final Occupant occupant = grid.getOccupant(new Cell(row, col));
 
                 if (occupant.getOccupantType() == OccupantType.PIG) {
                     final Occupant[][] neighbors = new Occupant[3][3];
+
+                    // Set pig at the center of the 3x3 neighbors matrix
+                    neighbors[1][1] = occupant;
+
+                    // Set the other eight neighbors
                     setNeighbor(neighbors, configuration, grid, row - 1, col - 1, 0, 0);
                     setNeighbor(neighbors, configuration, grid, row - 1, col, 0, 1);
                     setNeighbor(neighbors, configuration, grid, row - 1, col + 1, 0, 2);
@@ -274,7 +278,7 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
         // Validate that the given rowGrid and colGrid are within the grid bounds
         if (rowGrid >= 0 && rowGrid < configuration.getRows() &&
                 colGrid >= 0 && colGrid < configuration.getColumns()) {
-            neighbors[row][col] = grid.getOccupants().get(rowGrid).get(colGrid);
+            neighbors[row][col] = grid.getOccupant(new Cell(rowGrid, colGrid));
         } else {
             // If outside bounds, then set that neighbor as null
             neighbors[row][col] = null;
@@ -339,13 +343,6 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
             occupant.setOccupiedCell(new Cell(row, col));
             occupant.setOccupantType(occupantType);
             occupants[row][col] = occupant;
-
-            // TODO Remove hard-coding of P1 at {3,4}
-            if (occupant.getOccupantType() == OccupantType.PIG && ((Pig) occupant).getId().equals("1")) {
-                occupants[row][col] = null;
-                occupant.setOccupiedCell(new Cell(3, 4));
-                occupants[3][4] = occupant;
-            }
         }
     }
 
@@ -499,12 +496,10 @@ public class GameServerImpl extends UnicastRemoteObject implements GameServer {
 
     @Override
     public void stoneDestroyed(final Occupant stoneOccupant) throws RemoteException {
-        // TODO Suppose a pig has an imminent bird attack, and says takeShelter to a neighbor,
-        // and then the neighbor was able to move, and called the move() listener on to a pig,
-        // (write more)
-
-        // TODO Basically get all updated positions of all pigs before finding a position
-        // for this stone to topple onto
+        // Need to synchronously update all pigs' locations before toppling the stone over on its
+        // neighbors, because pigs might have moved, and this stone might fall on the cell in which
+        // a pig was *in the past*, but not anymore.
+        new PigLocationsUpdater(getConfiguration().getPigSet(), getConfiguration().getGrid()).update();
 
         // Since stoneOccupant has fallen, we can set it as an EMPTY Occupant
         // in the configuration's grid

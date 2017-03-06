@@ -103,6 +103,7 @@ public interface PigServer extends Remote {
      *               or about to get hit
      * @return {@code true} if the neighbor was able to move from its position;
      * {@code false} otherwise
+     * @throws RemoteException Thrown when a Java RMI exception occurs
      */
     boolean takeShelter(final Pig sender) throws RemoteException;
 
@@ -111,6 +112,13 @@ public interface PigServer extends Remote {
      *
      * @return {@code true} if the pig was hit (and is now dead);
      * {@code false} otherwise
+     * @throws RemoteException Thrown when a Java RMI exception occurs
      */
     boolean wasHit() throws RemoteException;
+
+    /**
+     * @return The current pig object
+     * @throws RemoteException Thrown when a Java RMI exception occurs
+     */
+    Pig getPig() throws RemoteException;
 }
