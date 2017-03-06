@@ -1,0 +1,96 @@
+~~~~~~~~~~~~~[GAME SERVER LOGS]~~~~~~~~~~~~
+
+Welcome to Smart Pigs!
+
+I am your host, Game Server.
+
+Grid :
+{0, 0} S	{0, 1} P5	{0, 2} S	{0, 3} S	{0, 4} S
+{1, 0} S	{1, 1} S	{1, 2} E	{1, 3} S	{1, 4} S
+{2, 0} P3	{2, 1} P1	{2, 2} E	{2, 3} P4	{2, 4} S
+{3, 0} S	{3, 1} S	{3, 2} E	{3, 3} S	{3, 4} S
+{4, 0} S	{4, 1} S	{4, 2} E	{4, 3} P2	{4, 4} P6
+
+Sending data to all pigs...
+Data sent.
+
+Launching a bird on Cell {3, 4}. ETA : 3000 ms.
+Stone at Cell {3, 4} was destroyed.
+Stone falling on P2 at Cell {4, 3}.
+
+Game Over!
+Pig 1 was not hit!
+Pig 2 was hit!
+Pig 3 was not hit!
+Pig 4 was not hit!
+Pig 5 was not hit!
+Pig 6 was not hit!
+
+Final Score : 1 pig hit!
+
+~~~~~~~~~~~~[PIG SERVER 1 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+Received data.
+	Pig ID : 1
+	Cell : {2, 1}
+	Peers : [P2, P4, P5]
+	Neighbors : [[S, S, E], [P3, null, E], [S, S, E]]
+Bird approaching at Cell {3, 4}. ETA : 2000 ms.
+
+~~~~~~~~~~~~[PIG SERVER 2 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+Received data.
+	Pig ID : 2
+	Cell : {4, 3}
+	Peers : [P1, P5]
+	Neighbors : [[E, S, S], [E, null, P6], [null, null, null]]
+Bird approaching at Cell {3, 4}. ETA : 3000 ms.
+I AM HIT!
+
+~~~~~~~~~~~~[PIG SERVER 3 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+Received data.
+	Pig ID : 3
+	Cell : {2, 0}
+	Peers : [P4, P6]
+	Neighbors : [[null, S, S], [null, null, P1], [null, S, S]]
+Bird crashed at Cell {3, 4} 0 ms ago.
+
+~~~~~~~~~~~~[PIG SERVER 4 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+Received data.
+	Pig ID : 4
+	Cell : {2, 3}
+	Peers : [P1, P3]
+	Neighbors : [[E, S, S], [E, null, S], [E, S, S]]
+Bird approaching at Cell {3, 4}. ETA : 1000 ms.
+
+~~~~~~~~~~~~[PIG SERVER 5 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+Received data.
+	Pig ID : 5
+	Cell : {0, 1}
+	Peers : [P1, P2, P6]
+	Neighbors : [[null, null, null], [S, null, S], [S, S, E]]
+Bird approaching at Cell {3, 4}. ETA : 2000 ms.
+
+~~~~~~~~~~~~[PIG SERVER 6 LOGS]~~~~~~~~~~~~
+
+Pig Server created.
+Waiting for data...
+Received data.
+	Pig ID : 6
+	Cell : {4, 4}
+	Peers : [P3, P5]
+	Neighbors : [[S, S, null], [P2, null, null], [null, null, null]]
+Bird approaching at Cell {3, 4}. ETA : 1000 ms.
