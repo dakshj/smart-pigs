@@ -2,6 +2,18 @@ version '1.0'
 
 apply plugin: 'java'
 
+task fatJar(type: Jar) {
+    manifest {
+        //noinspection GroovyAssignabilityCheck
+        attributes 'Implementation-Title': 'Smart Pigs',
+                'Implementation-Version': version,
+                'Main-Class': 'com.smartpigs.Main'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 buildscript {
     repositories {
         mavenCentral()
