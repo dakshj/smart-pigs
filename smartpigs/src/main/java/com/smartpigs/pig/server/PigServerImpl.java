@@ -155,7 +155,7 @@ public class PigServerImpl extends UnicastRemoteObject
                 // Filter only empty cells
                 .filter(occupant -> occupant.getOccupantType() == OccupantType.EMPTY)
 
-                // Filter only those empty cells that are at least two steps away from the sender
+                // Filter only those empty cells that are two steps away from the sender
                 .filter(occupant -> Math.max(
                         Math.abs(sender.getOccupiedCell().getRow() - occupant.getOccupiedCell().getRow()),
                         Math.abs(sender.getOccupiedCell().getCol() - occupant.getOccupiedCell().getCol())
@@ -171,7 +171,7 @@ public class PigServerImpl extends UnicastRemoteObject
             return true;
         }
 
-        System.out.println("No shelter found! (Needed to find an empty cell at least two steps away.)");
+        System.out.println("No shelter found! (Needed to find an empty cell two steps away.)");
 
         return false;
     }

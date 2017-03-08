@@ -97,7 +97,7 @@ public interface PigServer extends Remote {
      * Makes a pig take shelter away from the sender, who is a pig that is hit or about to get hit,
      * and thus cause collateral death to this pig.
      * <p>
-     * To take shelter, a pig needs to move at least two steps away from the sender.
+     * To take shelter, a pig needs to move two steps away from the sender.
      *
      * @param sender The pig that initiated {@link ShelterInformer}, and who is already hit,
      *               or about to get hit

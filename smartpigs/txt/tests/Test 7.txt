@@ -52,7 +52,7 @@ Received data.
 	Neighbors : [[S, S, P5], [P6, null, S], [null, null, null]]
 Bird approaching at Cell {3, 4}. ETA : 3000 ms.
 P5 asked to take shelter!
-No shelter found! (Needed to find an empty cell at least two steps away.)
+No shelter found! (Needed to find an empty cell two steps away.)
 
 ~~~~~~~~~~~~[PIG SERVER 3 LOGS]~~~~~~~~~~~~
 
@@ -76,7 +76,7 @@ Received data.
 	Neighbors : [[S, S, null], [S, null, null], [S, P5, null]]
 Bird approaching at Cell {3, 4}. ETA : 1000 ms.
 P5 asked to take shelter!
-No shelter found! (Needed to find an empty cell at least two steps away.)
+No shelter found! (Needed to find an empty cell two steps away.)
 
 ~~~~~~~~~~~~[PIG SERVER 5 LOGS]~~~~~~~~~~~~
 
