@@ -29,7 +29,7 @@ Collaborators: [Daksh Jotwani](https://github.com/dakshj), [Nidhi Mundra](https:
 `./gradlew fatJar`
 
 ## Starting a Pig Server
-`java -jar 1 {port-number}`
+`java -jar {jar-file-path} 1 {port-number}`
 
 ## Starting a Game Server
 `java -jar {jar-file-path} 0 {config-json-file-path}`
