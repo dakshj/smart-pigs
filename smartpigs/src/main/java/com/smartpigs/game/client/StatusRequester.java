@@ -5,6 +5,7 @@ import com.smartpigs.pig.server.PigServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +19,9 @@ public class StatusRequester {
     }
 
     /**
-     * Requests the hit status of each pig.
+     * Requests the hit status of all pigs.
+     * <p>
+     * Analogous to "status_all()".
      *
      * @return A {@link Map} of Pig IDs vs. their corresponding hit statuses
      */
@@ -27,12 +30,27 @@ public class StatusRequester {
 
         for (final Pig pig : pigSet) {
             try {
-                hitMap.put(pig.getId(), PigServer.connect(pig).wasHit());
+                hitMap.put(pig.getId(), request(pig));
             } catch (RemoteException | NotBoundException e) {
                 e.printStackTrace();
             }
         }
 
         return hitMap;
+    }
+
+    /**
+     * Requests the hit status of a single pig.
+     * <p>
+     * Analogous to "status(pigID)".
+     *
+     * @param pig The pig whose hit status needs to be queried
+     * @return {@code true} if the pig was hit;
+     * {@code false} otherwise
+     * @throws RemoteException   Thrown when a Java RMI exception occurs
+     * @throws NotBoundException Thrown when the remote binding does not exist in the {@link Registry}
+     */
+    private boolean request(final Pig pig) throws RemoteException, NotBoundException {
+        return PigServer.connect(pig).wasHit();
     }
 }
