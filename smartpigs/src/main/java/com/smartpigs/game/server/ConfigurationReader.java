@@ -54,6 +54,8 @@ class ConfigurationReader {
 
         final Configuration configuration = gson.fromJson(jsonObject, Configuration.class);
 
+        checkOccupantCapacityInGrid(configuration);
+
         buildPeerMap(configuration, jsonObject);
 
         initializeClosestPig(configuration, jsonObject);
@@ -280,8 +282,6 @@ class ConfigurationReader {
      * @param configuration The configuration to validate
      */
     private void validateConfiguration(final Configuration configuration) {
-        checkOccupantCapacityInGrid(configuration);
-
         if (configuration.getMaxHopCount() <= 0) {
             throw new InvalidConfigurationException("The max hop count is invalid!");
         }
