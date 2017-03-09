@@ -44,6 +44,10 @@ public class BirdAttackInformer {
     public void inform() {
         path.add(sender);
 
+        if (peers == null || peers.isEmpty()) {
+            return;
+        }
+
         peers.stream()
                 .filter(peer -> !path.contains(peer))
 

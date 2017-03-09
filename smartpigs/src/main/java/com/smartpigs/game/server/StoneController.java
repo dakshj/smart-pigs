@@ -1,6 +1,5 @@
 package com.smartpigs.game.server;
 
-import com.smartpigs.enums.OccupantType;
 import com.smartpigs.game.client.PigLocationsUpdater;
 import com.smartpigs.model.Cell;
 import com.smartpigs.model.Configuration;
@@ -37,29 +36,33 @@ class StoneController {
                 .filter(occupant ->
                         occupant.getOccupiedCell().equals(stoneOccupant.getOccupiedCell()))
                 .findFirst()
-                .ifPresent(occupant -> occupant.setOccupantType(OccupantType.EMPTY));
+                .ifPresent(occupant ->
+                        getConfiguration().getGrid().setOccupantAsEmpty(stoneOccupant.getOccupiedCell()));
 
         // Randomly select a Cell for stoneOccupant to fall on
         int row = stoneOccupant.getOccupiedCell().getRow()
                 + ThreadLocalRandom.current().nextInt(-1, 2);
         int col = stoneOccupant.getOccupiedCell().getCol()
                 + ThreadLocalRandom.current().nextInt(-1, 2);
+        Cell stoneFallingCell = new Cell(row, col);
 
-        final Cell stoneFallingCell = new Cell(row, col);
-
-        if (stoneFallingCell.equals(stoneOccupant.getOccupiedCell()) ||
+        while (stoneFallingCell.equals(stoneOccupant.getOccupiedCell()) ||
                 row < 0 || row >= getConfiguration().getRows() ||
                 col < 0 || col >= getConfiguration().getColumns()) {
             // Regenerate the random Cell since previous Cell was invalid
-            stoneDestroyed(stoneOccupant);
-            return;
+            row = stoneOccupant.getOccupiedCell().getRow()
+                    + ThreadLocalRandom.current().nextInt(-1, 2);
+            col = stoneOccupant.getOccupiedCell().getCol()
+                    + ThreadLocalRandom.current().nextInt(-1, 2);
+            stoneFallingCell = new Cell(row, col);
         }
 
         System.out.println("Stone at Cell " + stoneOccupant.getOccupiedCell() + " was destroyed.");
 
+        final Cell finalStoneFallingCell = stoneFallingCell;
         getConfiguration().getGrid().getOccupants().stream()
                 .flatMap(Collection::stream)
-                .filter(occupant -> occupant.getOccupiedCell().equals(stoneFallingCell))
+                .filter(occupant -> occupant.getOccupiedCell().equals(finalStoneFallingCell))
                 .findFirst()
                 .ifPresent(occupant -> {
                     switch (occupant.getOccupantType()) {

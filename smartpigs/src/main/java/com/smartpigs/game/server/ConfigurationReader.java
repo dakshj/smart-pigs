@@ -312,15 +312,6 @@ class ConfigurationReader {
         if (configuration.getClosestPig() == null) {
             throw new InvalidConfigurationException("The pig closest to the bird launcher is invalid!");
         }
-
-        if (configuration.getPeerMap() == null || configuration.getPeerMap().isEmpty()) {
-            throw new InvalidConfigurationException("The Peer Map is invalid!\n"
-                    + "(Please check the \"network\" JSON array)");
-        }
-
-        if (configuration.getNeighborMap() == null || configuration.getNeighborMap().isEmpty()) {
-            throw new InvalidConfigurationException("The Neighbor Map is invalid!");
-        }
     }
 
     /**

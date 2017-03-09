@@ -30,8 +30,9 @@ public class PigLocationsUpdater {
             try {
                 final Pig newPig = PigServer.connect(oldPig).getPig();
 
+                grid.setOccupantAsEmpty(oldPig.getOccupiedCell());
+
                 if (!newPig.getOccupiedCell().equals(oldPig.getOccupiedCell())) {
-                    grid.setOccupantAsEmpty(oldPig.getOccupiedCell());
                     grid.setOccupant(newPig);
                 }
             } catch (RemoteException | NotBoundException e) {

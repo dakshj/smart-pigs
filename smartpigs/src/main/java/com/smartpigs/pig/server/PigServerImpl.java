@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class PigServerImpl extends UnicastRemoteObject
         implements PigServer, ShelterInformer.NeighborMovedListener {
@@ -188,14 +189,21 @@ public class PigServerImpl extends UnicastRemoteObject
             e.printStackTrace();
         }
 
-        final int row = ThreadLocalRandom.current().nextInt(0, 3);
-        final int col = ThreadLocalRandom.current().nextInt(0, 3);
-
-        final Occupant occupant = getNeighbors().get(row).get(col);
-
-        if (occupant == null) {
-            killSelfAndAnotherOccupant();
+        if (getNeighbors().stream()
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()).size() == 0) {
             return;
+        }
+
+        int row = ThreadLocalRandom.current().nextInt(0, 3);
+        int col = ThreadLocalRandom.current().nextInt(0, 3);
+        Occupant occupant = getNeighbors().get(row).get(col);
+
+        while (occupant == null) {
+            row = ThreadLocalRandom.current().nextInt(0, 3);
+            col = ThreadLocalRandom.current().nextInt(0, 3);
+            occupant = getNeighbors().get(row).get(col);
         }
 
         System.out.println("Falling on Cell " + occupant.getOccupiedCell());
